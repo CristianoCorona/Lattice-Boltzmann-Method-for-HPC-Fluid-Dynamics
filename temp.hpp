@@ -42,7 +42,7 @@ concept isDescriptor = requires{
 
 } && std::derived_from<T, LatticeDescriptor<T::d, T::q>>;
 
-
+template<std::floating_point float_type>
 struct D2Q9 : public LatticeDescriptor<2, 9> {
 
     static constexpr int c[9][2] = {
@@ -50,38 +50,57 @@ struct D2Q9 : public LatticeDescriptor<2, 9> {
         { 1, 0}, { 0, 1}, {-1, 0}, { 0,-1},
         { 1, 1}, {-1, 1}, {-1,-1}, { 1,-1}
     };
-    static constexpr double w[9] = {
+    static constexpr float_type w[9] = {
         4.0 / 9.0,
         1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0,
         1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0
     };
-    static constexpr double cs2 = 1.0 / 3.0;
+    static constexpr float_type cs2 = 1.0 / 3.0;
 
 };
 
-
-template <isDescriptor Descriptor>
+template <isDescriptor Descriptor, std::floating_point float_type = double> //customizable precision, default double
 class Lattice {
 
 public:
 
-    Lattice(int nx, int ny) : u(Descriptor.d), f_current(Descriptor.q), f_next(Descriptor.q), u_w(Descriptor.d * 2, std::vector<double>(Descriptor.d)); // constructor
+    static constexpr int d = Descriptor::d;
+    static constexpr int q = Descriptor::q;
+    int nx; 
+    int ny; 
+    const int total_cells = nx * ny;
 
-    std::array<std::vector<double>, Descriptor::q> f_current;
-    std::array<std::vector<double>, Descriptor::q> f_next;
-    std::array<std::vector<double>, Descriptor::d> u;
-    std::vector<double> rho;
-    std::vector<double> sigma;
-    std::array<std::array<std::vector<double>, Descriptor::d>, 2> u_w;
+    Lattice(int nx, int ny, float_type lid_velocity) : nx(nx), ny(ny), u(d), f_current(q), f_next(q), u_lid(lid_velocity){
+        //TODO: ghost cells handling -> +2 padding?
+        for(int i = 0; i < q; ++i) {
+            f_current[i].resize(total_cells, 0.0); 
+            f_next[i].resize(total_cells, 0.0);
+        }
+        for(int k = 0; k < d; ++k) {
+            u[k].resize(total_cells, 0.0);
+        }
+        rho.resize(total_cells, 1.0); // Init rho a 1
+    }
+
+    std::array<std::vector<float_type>, q> f_current;
+    std::array<std::vector<float_type>, q> f_next;
+    std::vector<float_type> rho;
+    std::array<std::vector<float_type>, d> u;
+    float_type u_lid;
 
     // Do we need this if we have a single function for the solve?
     void swap_buffers();
 
     // functions for boundaries
-    void boundary_values(const std::vector<int> &coords, double &rho_b, std::vector<double> &u_w);
+    void boundary_values(const std::vector<int> &coords, float_type &rho_b);
 
-    // from matrix indeces return vector indicex
-    inline int idx(const std::vector<int> &coords);
+    // functions for indices
+    template <typename... Ints>
+    [[nodiscard]] inline int idx(Ints...coords); //variadic template for indexing (general for 2D/3D)
+
+    //Initialize equilibrium with u=0 and rho=1
+    void initialize_equilibrium();
+    
 };
 
 
