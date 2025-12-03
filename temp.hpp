@@ -68,7 +68,17 @@ public:
     int ny; 
     const int total_cells = nx * ny;
 
-    Lattice(int nx, int ny, float_type lid_velocity) : nx(nx), ny(ny), u(d), f_current(q), f_next(q), u_lid(lid_velocity);
+    Lattice(int nx, int ny, float_type lid_velocity) : nx(nx), ny(ny), u(d), f_current(q), f_next(q), u_lid(lid_velocity){
+        //TODO: ghost cells handling -> +2 padding?
+        for(int i = 0; i < q; ++i) {
+            f_current[i].resize(total_cells, 0.0); 
+            f_next[i].resize(total_cells, 0.0);
+        }
+        for(int k = 0; k < d; ++k) {
+            u[k].resize(total_cells, 0.0);
+        }
+        rho.resize(total_cells, 1.0); // Init rho a 1
+    }
 
     std::array<std::vector<float_type>, q> f_current;
     std::array<std::vector<float_type>, q> f_next;
@@ -79,13 +89,15 @@ public:
     void swap_buffers();
 
     // functions for boundaries
-    void boundary_values(const std::vector<int> &coords, float_type &rho_b, std::vector<float_type> &u_w);
+    void boundary_values(const std::vector<int> &coords, float_type &rho_b);
 
     // functions for indices
-    inline int idx(const std::vector<int> &coords);
+    template <typename... Ints>
+    [[nodiscard]] inline int idx(Ints...coords); //variadic template for indexing (general for 2D/3D)
 
     //Initialize equilibrium with u=0 and rho=1
     void initialize_equilibrium();
+    
 };
 
 template <isDescriptor Descriptor>
