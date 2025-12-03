@@ -40,6 +40,7 @@ concept isDescriptor = requires{
 
 } && std::derived_from<T, LatticeDescriptor<T::d, T::q>>;
 
+template<std::floating_point float_type>
 struct D2Q9 : public LatticeDescriptor<2, 9> {
 
     static constexpr int c[9][2] = {
@@ -47,33 +48,33 @@ struct D2Q9 : public LatticeDescriptor<2, 9> {
         { 1, 0}, { 0, 1}, {-1, 0}, { 0,-1},
         { 1, 1}, {-1, 1}, {-1,-1}, { 1,-1}
     };
-    static constexpr double w[9] = {
+    static constexpr float_type w[9] = {
         4.0 / 9.0,
         1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0,
         1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0
     };
-    static constexpr double cs2 = 1.0 / 3.0;
+    static constexpr float_type cs2 = 1.0 / 3.0;
 
 };
 
-template <isDescriptor Descriptor>
+template <isDescriptor Descriptor, std::floating_point float_type = double> //customizable precision, default double
 class Lattice {
 
 public:
 
     Lattice(int nx, int ny) : u(Descriptor.d), f_current(Descriptor.q), f_next(Descriptor.q), u_w(Descriptor.d * 2, std::vector<double>(Descriptor.d)); // constructor
 
-    std::vector<std::vector<double>> f_current;
-    std::vector<std::vector<double>> f_next;
-    std::vector<double> rho;
-    std::vector<std::vector<double>> u;
-    std::vector<double> sigma;
-    std::vector<std::vector<std::vector<double>>> u_w;
+    std::vector<std::vector<float_type>> f_current;
+    std::vector<std::vector<float_type>> f_next;
+    std::vector<float_type> rho;
+    std::vector<std::vector<float_type>> u;
+    std::vector<float_type> sigma;
+    std::vector<std::vector<std::vector<float_type>>> u_w;
 
     void swap_buffers();
 
     // functions for boundaries
-    void boundary_values(const std::vector<int> &coords, double &rho_b, std::vector<double> &u_w);
+    void boundary_values(const std::vector<int> &coords, float_type &rho_b, std::vector<float_type> &u_w);
 
     // functions for indices
     inline int idx(const std::vector<int> &coords);
