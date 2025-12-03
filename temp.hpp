@@ -62,13 +62,18 @@ class Lattice {
 
 public:
 
-    Lattice(int nx, int ny) : u(Descriptor.d), f_current(Descriptor.q), f_next(Descriptor.q), u_w(Descriptor.d * 2, std::vector<double>(Descriptor.d)); // constructor
+    static constexpr int d = Descriptor::d;
+    static constexpr int q = Descriptor::q;
+    int nx; 
+    int ny; 
+    const int total_cells = nx * ny;
 
-    std::vector<std::vector<float_type>> f_current;
-    std::vector<std::vector<float_type>> f_next;
+    Lattice(int nx, int ny) : nx(nx), ny(ny), u(d), f_current(q), f_next(q), u_w(d * 2, std::vector<float_type>(d)); // constructor
+
+    std::array<std::vector<float_type>, q> f_current;
+    std::array<std::vector<float_type>, q> f_next;
     std::vector<float_type> rho;
-    std::vector<std::vector<float_type>> u;
-    std::vector<float_type> sigma;
+    std::array<std::vector<float_type>, d> u;
     std::vector<std::vector<std::vector<float_type>>> u_w;
 
     void swap_buffers();
