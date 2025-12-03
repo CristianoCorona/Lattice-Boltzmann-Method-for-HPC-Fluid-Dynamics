@@ -68,13 +68,13 @@ public:
     int ny; 
     const int total_cells = nx * ny;
 
-    Lattice(int nx, int ny) : nx(nx), ny(ny), u(d), f_current(q), f_next(q), u_w(d * 2, std::vector<float_type>(d)); // constructor
+    Lattice(int nx, int ny, float_type lid_velocity) : nx(nx), ny(ny), u(d), f_current(q), f_next(q), u_lid(lid_velocity);
 
     std::array<std::vector<float_type>, q> f_current;
     std::array<std::vector<float_type>, q> f_next;
     std::vector<float_type> rho;
     std::array<std::vector<float_type>, d> u;
-    std::vector<std::vector<std::vector<float_type>>> u_w;
+    float_type u_lid;
 
     void swap_buffers();
 
@@ -83,6 +83,9 @@ public:
 
     // functions for indices
     inline int idx(const std::vector<int> &coords);
+
+    //Initialize equilibrium with u=0 and rho=1
+    void initialize_equilibrium();
 };
 
 template <isDescriptor Descriptor>
