@@ -78,6 +78,9 @@ public:
             u[k].resize(total_cells, 0.0);
         }
         rho.resize(total_cells, 1.0); // Init rho a 1
+        mask.resize(total_cells, FLUID);
+        
+        setup_CellType();
     }
 
     std::array<std::vector<float_type>, q> f_current;
@@ -86,10 +89,13 @@ public:
     std::array<std::vector<float_type>, d> u;
     float_type u_lid;
 
+    enum CellType : uint8_t {FLUID=0, WALL=1, LID=2};
+    std::vector<CellType> mask;
+
     void swap_buffers();
 
-    // functions for boundaries
-    void boundary_values(const std::vector<int> &coords, float_type &rho_b);
+    // functions for boundaries-> NOT needed with the mask approach
+    //void boundary_values(const std::vector<int> &coords, float_type &rho_b);
 
     // functions for indices
     template <typename... Ints>
@@ -97,6 +103,10 @@ public:
 
     //Initialize equilibrium with u=0 and rho=1
     void initialize_equilibrium();
+
+private:
+    // function to setup the mask; called once in the constructor
+    void setup_CellType();
     
 };
 
