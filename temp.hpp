@@ -42,6 +42,7 @@ concept isDescriptor = requires{
 
 } && std::derived_from<T, LatticeDescriptor<T::d, T::q>>;
 
+
 template<std::floating_point float_type>
 struct D2Q9 : public LatticeDescriptor<2, 9> {
 
@@ -59,6 +60,7 @@ struct D2Q9 : public LatticeDescriptor<2, 9> {
 
 };
 
+
 template <isDescriptor Descriptor, std::floating_point float_type = double> //customizable precision, default double
 class Lattice {
 
@@ -71,11 +73,12 @@ public:
     const int total_cells = nx * ny;
 
     Lattice(int nx, int ny, float_type lid_velocity) : nx(nx), ny(ny), u(d), f_current(q), f_next(q), u_lid(lid_velocity){
-        //TODO: ghost cells handling -> +2 padding?
+
         for(int i = 0; i < q; ++i) {
             f_current[i].resize(total_cells, 0.0); 
             f_next[i].resize(total_cells, 0.0);
         }
+
         for(int k = 0; k < d; ++k) {
             u[k].resize(total_cells, 0.0);
         }
@@ -88,11 +91,13 @@ public:
     std::array<std::vector<float_type>, d> u;
     float_type u_lid;
 
-    // Do we need this if we have a single function for the solve?
+    // To swap f_current and f_next
     void swap_buffers();
 
     // functions for boundaries
-    void boundary_values(const std::vector<int> &coords, float_type &rho_b);
+    // #################################################################################
+    // we should instead compute the boundares first, to avoid the if condition on every cell at every iteration
+    //void boundary_values(const std::vector<int> &coords, float_type &rho_b);
 
     // functions for indices
     template <typename... Ints>
@@ -122,8 +127,7 @@ public:
 
     void compute_moments(Lattice<Descriptor>& grid);
     void stream_collide_inner(Lattice<Descriptor>& grid);
-    // (((between these there could be MPI communication)))
-    void stream_collide_boundaries(Lattice<Descriptor>& grid);
+    
     void apply_bcs(Lattice<Descriptor>& grid, double u_lid);
 
     // function for the output, maybe change second parameter, 
