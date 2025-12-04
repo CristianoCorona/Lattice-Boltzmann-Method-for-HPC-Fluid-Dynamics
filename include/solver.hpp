@@ -33,28 +33,37 @@ private:
     constexpr float_type inv_2cs2 = 1.5; // 2.0 * 1.0 / (1.0 / 3.0)
     constexpr float_type inv_2cs4 = 4.5; // 2.0 * 1.0 / (1.0 / 3.0)^2
 
+    constexpr auto scalar_prod = [](auto &a, auto &b) {
+        float_type res = 0.0;
+        for (int i = 0; i < Descriptor::d; ++i) {
+            res += static_cast<float_type>(a[i]) * static_cast<float_type>(b[i]);
+        }
+
+        return res;
+    }
+
     // helper function to compute equilibrium in a single direction
-    inline float_type compute_eq(const int c_i, const float_type w_i, const float_type rho, const std::array<float_type, const Descriptor::d> &u); 
+    inline float_type compute_eq(const std::array<int, Descriptor::d> &c_i, const float_type w_i, const float_type rho, const std::array<float_type, Descriptor::d> &u){
+        return w_i * rho * (1.0 + inv_cs2 * scalar_prod(c_i, u) + inv_2cs4 * scalar_prod(c_i, u) * scalar_prod(c_i, u) - inv_2cs2 * scalar_prod(u, u));
+    }; 
     
     // helper function to compute collision in a single direction
-    inline float_type compute_star(const float_type f_i, const float_type feq_i, const float_type tau, const float_type delta_t);
+    inline float_type compute_star(const float_type f_i, const float_type feq_i, const float_type inv_tau_star){
+        return f_i * (1 - inv_tau_star) + feq_i * inv_tau_star;
+    };
     
     // function that computes f_next in a single direction
-    void stream_collide(const int i, const float_type tau, const float_type delta_t);
-
-    // function that computes rho and u for each cell of the lattice
-    void compute_moments();
+    void stream_collide(const int i, const float_type inv_tau_star);
     
-    // function for the output, maybe change second parameter, 
-    // use flag to set what output you want
-    void write_output(Lattice<Descriptor>& grid, char* out_buffer, char flag);
 public:
+
     // constructor
     Solver(Lattice<Descriptor, float_type> &lattice) : lattice(lattice); 
 
     // wraps the entire simulation over a user-defined number of iterations (n_iterations) where each step reprents a user-defined time interval
     // of lenght delta_t
     void solve(const unsigned long n_iterations, const float_type delta_t);
+    
 };
 
 #endif
