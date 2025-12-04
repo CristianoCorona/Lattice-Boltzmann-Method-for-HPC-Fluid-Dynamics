@@ -24,29 +24,37 @@ class Solver {
 
 private:
 
-    constexpr float_type tau_coefficient = 0.9; // to compute tau from delta_t
     Lattice<Descriptor, float_type> &lattice;
-
-    // helper function to compute equilibrium
-    inline double feq(int ci, float_type wi, float_type rho, std::array<float_type, Descriptor::d> &u); 
-    inline double f_star(float_type fi, float_type feq_i, float_type tau, float_type delta_t);
-
-public:
-
-    // constructor
-    Solver(double kinematic_viscosity, Lattice<Descriptor, float_type> &lattice) : lattice(lattice); 
-
-    void solve(int n_iterations, float_type delta_t);
-
-    void compute_moments(Lattice<Descriptor>& grid);
-    void stream_collide_inner(Lattice<Descriptor>& grid);
     
-    void apply_bcs(Lattice<Descriptor>& grid, double u_lid);
+    // Since cs^2 is constant and it's a problem property it's more efficent to store it as a constexpr inside the Solver
+    // to make the compiler able to inster its value at compile time inside the code preventing the read of the same value
+    // from Lattice at each iteration
+    constexpr float_type inv_cs2 = 3.0; // 1.0 / (1.0 / 3.0)
+    constexpr float_type inv_2cs2 = 1.5; // 2.0 * 1.0 / (1.0 / 3.0)
+    constexpr float_type inv_2cs4 = 4.5; // 2.0 * 1.0 / (1.0 / 3.0)^2
 
+    // helper function to compute equilibrium in a single direction
+    inline float_type compute_eq(const int c_i, const float_type w_i, const float_type rho, const std::array<float_type, const Descriptor::d> &u); 
+    
+    // helper function to compute collision in a single direction
+    inline float_type compute_star(const float_type f_i, const float_type feq_i, const float_type tau, const float_type delta_t);
+    
+    // function that computes f_next in a single direction
+    void stream_collide(const int i, const float_type tau, const float_type delta_t);
+
+    // function that computes rho and u for each cell of the lattice
+    void compute_moments();
+    
     // function for the output, maybe change second parameter, 
     // use flag to set what output you want
     void write_output(Lattice<Descriptor>& grid, char* out_buffer, char flag);
+public:
+    // constructor
+    Solver(Lattice<Descriptor, float_type> &lattice) : lattice(lattice); 
 
+    // wraps the entire simulation over a user-defined number of iterations (n_iterations) where each step reprents a user-defined time interval
+    // of lenght delta_t
+    void solve(const unsigned long n_iterations, const float_type delta_t);
 };
 
 #endif
