@@ -31,17 +31,17 @@ concept isDescriptor = requires{
 template<std::floating_point float_type>
 struct D2Q9 : public LatticeDescriptor<2, 9> {
 
-    static constexpr int c[9][2] = {
-        { 0, 0},
-        { 1, 0}, { 0, 1}, {-1, 0}, { 0,-1},
-        { 1, 1}, {-1, 1}, {-1,-1}, { 1,-1}
-    };
-    static constexpr float_type w[9] = {
+    static constexpr std::array<std::array<int, 2>, 9> c = {{
+        {{ 0, 0}},
+        {{ 1, 0}}, {{ 0, 1}}, {{-1, 0}}, {{ 0,-1}},
+        {{ 1, 1}}, {{-1, 1}}, {{-1,-1}}, {{ 1,-1}}
+    }};
+    static constexpr std::array<float_type, 9> w = {
         4.0 / 9.0,
         1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0, 1.0 / 9.0,
         1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0
     };
-    static constexpr float_type cs2 = 1.0 / 3.0;
+    static constexpr std::array<int, 9> opposite = {0, 3, 4, 1, 2, 7, 8, 5, 6};
 
 };
 
