@@ -57,24 +57,31 @@ public:
     int ny; 
     const int total_cells = nx * ny;
 
-    Lattice(int nx, int ny, float_type lid_velocity) : nx(nx), ny(ny), u(d), f_current(q), f_next(q), u_lid(lid_velocity){
+    Lattice(int nx, int ny, float_type lid_velocity) : nx(nx), ny(ny), f_current(q), f_next(q), u_lid(lid_velocity){
 
         for(int i = 0; i < q; ++i) {
             f_current[i].resize(total_cells, 0.0); 
             f_next[i].resize(total_cells, 0.0);
         }
 
-        for(int k = 0; k < d; ++k) {
-            u[k].resize(total_cells, 0.0);
-        }
+        u.resize(total_cells);
         rho.resize(total_cells, 1.0); // Init rho a 1
     }
 
     std::array<std::vector<float_type>, q> f_current;
     std::array<std::vector<float_type>, q> f_next;
     std::vector<float_type> rho;
-    std::array<std::vector<float_type>, d> u;
     float_type u_lid;
+
+    // u has 2 or 3 components depending on dim
+    template<int dim>
+    struct u_struct {
+
+        std::array<float_type, dim> data;
+        float_type& operator[](int i) { return data[i]; }
+        const float_type& operator[](int i) const { return data[i]; }
+    };
+    std::vector<u_struct<d>> u;
 
     // To swap f_current and f_next
     void swap_buffers();
