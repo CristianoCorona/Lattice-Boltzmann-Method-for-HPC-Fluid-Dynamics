@@ -110,8 +110,7 @@ public:
 
     std::array<std::vector<float_type>, q> f_current;
     std::array<std::vector<float_type>, q> f_next;
-    std::vector<float_type> rho;
-    float_type u_lid, nu, delta_t, dx;
+    float_type rho, rho_wall, rho_lid, u_lid, nu, delta_t, dx;
     const std::string output_file;
 
     // u has 2 or 3 components depending on dim
