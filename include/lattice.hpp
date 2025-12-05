@@ -42,7 +42,27 @@ struct D2Q9 : public LatticeDescriptor<2, 9> {
         1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0
     };
     static constexpr std::array<int, 9> opposite = {0, 3, 4, 1, 2, 7, 8, 5, 6};
+};
 
+
+template<std::floating_point float_type>
+struct D3Q19 : public LatticeDescriptor<3, 19> {
+
+    static constexpr std::array<std::array<int, 3>, 19> c = {{
+        {{ 0, 0, 0}},
+        {{ 1, 0, 0}}, {{ -1, 0, 0}}, {{ 0, 1, 0}}, {{ 0, -1, 0}}, {{ 0, 0, 1}}, {{ 0, 0, -1}},
+        {{ 1, 1, 0}}, {{ 1, -1, 0}}, {{ -1, 1, 0}}, {{ -1, -1, 0}},
+        {{ 1, 0, 1}}, {{ 1, 0, -1}}, {{ -1, 0, 1}}, {{ -1, 0, -1}},
+        {{ 0, 1, 1}}, {{ 0, 1, -1}}, {{ 0, -1, 1}}, {{ 0, -1, -1}}
+    }};
+    static constexpr std::array<float_type, 19> w = {
+        1.0 / 3.0,
+        1.0 / 18.0, 1.0 / 18.0, 1.0 / 18.0, 1.0 / 18.0, 1.0 / 18.0, 1.0 / 18.0,
+        1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0,
+        1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0,
+        1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0, 1.0 / 36.0
+    };
+    static constexpr std::array<int, 19> opposite = {0, 2, 1, 4, 3, 6, 5, 10, 9, 8, 7, 14, 13, 12, 11, 18, 17, 16, 15};
 };
 
 
@@ -53,11 +73,15 @@ public:
 
     static constexpr int d = Descriptor::d;
     static constexpr int q = Descriptor::q;
-    int nx; 
-    int ny; 
-    const int total_cells = nx * ny;
 
-    Lattice(int nx, int ny, float_type lid_velocity) : nx(nx), ny(ny), f_current(q), f_next(q), u_lid(lid_velocity){
+    // sizes in each dimention
+    std::array<int, d> sizes;
+    int total_cells;
+
+    Lattice(std::array<int, d> dimensions, float_type lid_velocity) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity){
+
+        total_cells = 1;
+        for(int s : dimensions) total_cells *= s;
 
         for(int i = 0; i < q; ++i) {
             f_current[i].resize(total_cells, 0.0); 
@@ -65,13 +89,18 @@ public:
         }
 
         u.resize(total_cells);
-        rho.resize(total_cells, 1.0); // Init rho a 1
+        for(int cell = 0; cell < total_cells; ++cell) {
+            for(int j = 0; j < d; ++j) {
+                u[cell][j] = 0.0;
+            }
+        }
+        rho.resize(total_cells, 1.0);
     }
 
     std::array<std::vector<float_type>, q> f_current;
     std::array<std::vector<float_type>, q> f_next;
     std::vector<float_type> rho;
-    float_type u_lid;
+    float_type u_lid, nu, delta_t;
 
     // u has 2 or 3 components depending on dim
     template<int dim>
@@ -87,8 +116,6 @@ public:
     void swap_buffers();
 
     // functions for boundaries
-    // #################################################################################
-    // we should instead compute the boundares first, to avoid the if condition on every cell at every iteration
     //void boundary_values(const std::vector<int> &coords, float_type &rho_b);
 
     // functions for indices
