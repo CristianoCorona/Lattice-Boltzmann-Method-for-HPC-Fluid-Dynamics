@@ -34,9 +34,9 @@ void Lattice<Descriptor, float_type>::initialize_equilibrium() {
 
 // Write a scalar field vector to VTK file for visualization
 template <isDescriptor Descriptor, std::floating_point float_type>
-void Lattice<Descriptor, float_type>::write_vtk(const std::string& filename, const std::vector<float_type>& data, const std::string& field_name) {
+void Lattice<Descriptor, float_type>::write_vtk(const std::vector<float_type>& data, const std::string& field_name) {
     
-    std::ofstream file(filename);
+    std::ofstream file(output_file);
     if (!file.is_open()) return;
 
     file << "# vtk DataFile Version 2.0\n";

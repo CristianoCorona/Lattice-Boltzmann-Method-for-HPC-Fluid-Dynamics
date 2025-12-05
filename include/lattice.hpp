@@ -79,14 +79,10 @@ public:
     std::array<int, d> sizes;
     int total_cells;
 
-<<<<<<< Updated upstream
-    Lattice(std::array<int, d> dimensions, float_type lid_velocity, float_type dx = 1.0) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity), dx(dx){
-=======
     // pre-computed strides for indexing
     std::array<int, d> strides;
 
-    Lattice(std::array<int, d> dimensions, float_type lid_velocity) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity){
->>>>>>> Stashed changes
+    Lattice(std::array<int, d> dimensions, float_type lid_velocity, float_type dx = 1.0, std::string output_file_) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity), dx(dx), output_file(output_file_){
 
         total_cells = 1;
         for(int s : dimensions) total_cells *= s;
@@ -116,6 +112,7 @@ public:
     std::array<std::vector<float_type>, q> f_next;
     std::vector<float_type> rho;
     float_type u_lid, nu, delta_t, dx;
+    const std::string output_file;
 
     // u has 2 or 3 components depending on dim
     template<int dim>
@@ -134,23 +131,26 @@ public:
     //void boundary_values(const std::vector<int> &coords, float_type &rho_b);
 
     // functions for indices
+    //variadic template for indexing (general for 2D/3D)
     template <typename... Ints>
     [[nodiscard]] inline int idx(Ints...coords) const {
         static_assert(sizeof...(coords) == d, "Number of coordinates must match lattice dimension");
+        // unroll stack array
         const int c[d] = {static_cast<int>(coords)...};
-
+        // y * nx + x  (2D)
         if constexpr (d == 2) {
             return c[1] * strides[1] + c[0];
         } else if constexpr (d == 3) {
+            // z * (nx * ny) + y * nx + x  (3D)
             return c[2] * strides[2] + c[1] * strides[1] + c[0];
         }
-    } //variadic template for indexing (general for 2D/3D)
+    } 
 
     //Initialize equilibrium with u=0 and rho=1
     void initialize_equilibrium();
     
     // Write a scalar field vector to VTK file for visualization
-    void write_vtk(const std::string& filename, const std::vector<float_type>& data, const std::string& field_name);
+    void write_vtk(const std::vector<float_type>& data, const std::string& field_name);
     
 };
 
