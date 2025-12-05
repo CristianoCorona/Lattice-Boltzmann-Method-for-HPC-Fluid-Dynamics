@@ -6,6 +6,7 @@
 #include <concepts>
 #include <vector>
 #include <array>
+#include <string>
 
 #ifndef LATTICE_HPP
 #define LATTICE_HPP
@@ -78,7 +79,7 @@ public:
     std::array<int, d> sizes;
     int total_cells;
 
-    Lattice(std::array<int, d> dimensions, float_type lid_velocity) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity){
+    Lattice(std::array<int, d> dimensions, float_type lid_velocity, float_type dx = 1.0) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity), dx(dx){
 
         total_cells = 1;
         for(int s : dimensions) total_cells *= s;
@@ -100,7 +101,7 @@ public:
     std::array<std::vector<float_type>, q> f_current;
     std::array<std::vector<float_type>, q> f_next;
     std::vector<float_type> rho;
-    float_type u_lid, nu, delta_t;
+    float_type u_lid, nu, delta_t, dx;
 
     // u has 2 or 3 components depending on dim
     template<int dim>
@@ -124,6 +125,9 @@ public:
 
     //Initialize equilibrium with u=0 and rho=1
     void initialize_equilibrium();
+    
+    // Write a scalar field vector to VTK file for visualization
+    void write_vtk(const std::string& filename, const std::vector<float_type>& data, const std::string& field_name);
     
 };
 
