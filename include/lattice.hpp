@@ -79,7 +79,14 @@ public:
     std::array<int, d> sizes;
     int total_cells;
 
+<<<<<<< Updated upstream
     Lattice(std::array<int, d> dimensions, float_type lid_velocity, float_type dx = 1.0) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity), dx(dx){
+=======
+    // pre-computed strides for indexing
+    std::array<int, d> strides;
+
+    Lattice(std::array<int, d> dimensions, float_type lid_velocity) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity){
+>>>>>>> Stashed changes
 
         total_cells = 1;
         for(int s : dimensions) total_cells *= s;
@@ -96,6 +103,13 @@ public:
             }
         }
         rho.resize(total_cells, 1.0);
+
+        // strides computation
+        int current_stride = 1;
+        for (int i = 0; i < d; ++i) {
+            strides[i] = current_stride;
+            current_stride *= sizes[i];
+        }
     }
 
     std::array<std::vector<float_type>, q> f_current;
@@ -121,7 +135,16 @@ public:
 
     // functions for indices
     template <typename... Ints>
-    [[nodiscard]] inline int idx(Ints...coords); //variadic template for indexing (general for 2D/3D)
+    [[nodiscard]] inline int idx(Ints...coords) const {
+        static_assert(sizeof...(coords) == d, "Number of coordinates must match lattice dimension");
+        const int c[d] = {static_cast<int>(coords)...};
+
+        if constexpr (d == 2) {
+            return c[1] * strides[1] + c[0];
+        } else if constexpr (d == 3) {
+            return c[2] * strides[2] + c[1] * strides[1] + c[0];
+        }
+    } //variadic template for indexing (general for 2D/3D)
 
     //Initialize equilibrium with u=0 and rho=1
     void initialize_equilibrium();

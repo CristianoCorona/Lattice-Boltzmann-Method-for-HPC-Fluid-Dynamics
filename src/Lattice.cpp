@@ -6,8 +6,8 @@ void Lattice<Descriptor, float_type>::swap_buffers() {
     std::swap(f_current, f_next);
 }
 
-// Variadic template for indexing (works for 2D/3D)
-template <isDescriptor Descriptor, std::floating_point float_type>
+// Implemented in .hpp as inline function for performance
+/*template <isDescriptor Descriptor, std::floating_point float_type>
 template <typename... Ints>
 int Lattice<Descriptor, float_type>::idx(Ints...coords) {
     int indices[d] = {coords...};
@@ -18,7 +18,7 @@ int Lattice<Descriptor, float_type>::idx(Ints...coords) {
         stride *= sizes[i];
     }
     return index;
-}
+}*/
 
 // Initialize equilibrium with u=0 and rho=1, called only in the beginning of the simulation
 template <isDescriptor Descriptor, std::floating_point float_type>
