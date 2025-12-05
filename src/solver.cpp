@@ -31,7 +31,7 @@ void Solver<Descriptor, float_type>::stream_collide(const int i, const float_typ
 
     const int c_i[Descriptor::d] =  Descriptor::c[i];
     const float_type w_i = Descriptor::w[i];
-    const std::vector<float_type> f_current = lattice.f_current[i];
+    const std::vector<float_type> &f_current = lattice.f_current[i];
 
     /*
      *  Iterates over the entire lattice computing f_eq, f_star and f_i for the
