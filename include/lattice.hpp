@@ -94,9 +94,7 @@ public:
 
         u.resize(total_cells);
         for(int cell = 0; cell < total_cells; ++cell) {
-            for(int j = 0; j < d; ++j) {
-                u[cell][j] = 0.0;
-            }
+            u[cell].fill(0.0);
         }
         rho.resize(total_cells, 1.0);
 
@@ -112,16 +110,7 @@ public:
     std::array<std::vector<float_type>, q> f_next;
     float_type rho, rho_wall, rho_lid, u_lid, nu, delta_t, dx;
     const std::string output_file;
-
-    // u has 2 or 3 components depending on dim
-    template<int dim>
-    struct u_struct {
-
-        std::array<float_type, dim> data;
-        float_type& operator[](int i) { return data[i]; }
-        const float_type& operator[](int i) const { return data[i]; }
-    };
-    std::vector<u_struct<d>> u;
+    std::vector<std::array<float_type, d>> u;
 
     // To swap f_current and f_next
     void swap_buffers();
@@ -150,6 +139,9 @@ public:
     
     // Write a scalar field vector to VTK file for visualization
     void write_vtk(const std::vector<float_type>& data, const std::string& field_name);
+    
+    // Write a vector field to VTK file for visualization (overload)
+    void write_vtk(const std::vector<std::array<float_type, d>>& data, const std::string& field_name);
     
 };
 

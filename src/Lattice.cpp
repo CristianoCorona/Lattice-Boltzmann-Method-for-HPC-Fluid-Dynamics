@@ -65,6 +65,44 @@ void Lattice<Descriptor, float_type>::write_vtk(const std::vector<float_type>& d
     file.close();
 }
 
+// Write a vector field to VTK file for visualization
+template <isDescriptor Descriptor, std::floating_point float_type>
+void Lattice<Descriptor, float_type>::write_vtk(const std::vector<std::array<float_type, Descriptor::d>>& data, const std::string& field_name) {
+    
+    std::ofstream file(output_file);
+    if (!file.is_open()) return;
+
+    file << "# vtk DataFile Version 2.0\n";
+    file << "LBM Vector Field\n";
+    file << "ASCII\n";
+    file << "DATASET STRUCTURED_POINTS\n";
+
+    if (Descriptor::d == 2) {
+        file << "DIMENSIONS " << sizes[0] << " " << sizes[1] << " 1\n";
+        file << "ORIGIN 0 0 0\n";
+        file << "SPACING " << dx << " " << dx << " " << dx << "\n";
+    } else {
+        file << "DIMENSIONS " << sizes[0] << " " << sizes[1] << " " << sizes[2] << "\n";
+        file << "ORIGIN 0 0 0\n";
+        file << "SPACING " << dx << " " << dx << " " << dx << "\n";
+    }
+
+    file << "POINT_DATA " << total_cells << "\n";
+    file << "VECTORS " << field_name << " float\n";
+
+    for (int cell = 0; cell < total_cells; ++cell) {
+        for (int k = 0; k < Descriptor::d; ++k) {
+            file << data[cell][k] << " ";
+        }
+        if (Descriptor::d == 2) {
+            file << "0.0";
+        }
+        file << "\n";
+    }
+
+    file.close();
+}
+
 // The first type is the descriptor's weights and velocities
 // THe second type is the lattice's dtributions and other datas
 template class Lattice<D2Q9<float>, float>;
