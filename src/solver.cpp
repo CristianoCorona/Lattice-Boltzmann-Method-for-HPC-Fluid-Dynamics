@@ -38,11 +38,11 @@ void Solver<Descriptor, float_type>::stream_collide(const int i, const float_typ
      *  given direction i and summing the contribution to the next density and
      *  velocity of the cells.
      */
-    for (int y = 0; y < lattice.ny; ++y) {
-        for (int x = 0; x < lattice.nx; ++x) {
-            int index = y * nx + x; // lattice.idx(x, y)
-            std::array<float_type, Descriptor::d> u = lattice.u_current[index];
-            float_type rho = lattice.rho_current[index];
+    for (int y = 0; y < lattice.sizes[1]; ++y) {
+        for (int x = 0; x < lattice.sizes[0]; ++x) {
+            int index = lattice.idx(x, y);
+            std::array<float_type, Descriptor::d> u = lattice.u[index];
+            float_type rho = lattice.rho[index];
             float_type f_i = f_current[index];
 
             float_type f_eq = compute_eq(c_i, w_i, rho, u);
@@ -103,8 +103,8 @@ void Solver<Descriptor, float_type>::solve(
      *  with respect of tau's relation with problem's parameters.
      */
     const float_type inv_tau_star = 1.0 / (
-                (lattice.nu * delta_t * inv_cs2) / 
-                (lattice.delta_x * lattice.delta_x) + 
+                (lattice.nu * lattice.delta_t * inv_cs2) / 
+                (lattice.dx * lattice.dx) + 
                 0.5
             );
 

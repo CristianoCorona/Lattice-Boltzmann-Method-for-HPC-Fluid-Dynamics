@@ -7,6 +7,7 @@
 #include <vector>
 #include <array>
 #include <string>
+#include <fstream>
 
 #ifndef LATTICE_HPP
 #define LATTICE_HPP
@@ -82,7 +83,7 @@ public:
     // pre-computed strides for indexing
     std::array<int, d> strides;
 
-    Lattice(std::array<int, d> dimensions, float_type lid_velocity, float_type dx = 1.0, std::string output_file_) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity), dx(dx), output_file(output_file_){
+    Lattice(std::array<int, d> dimensions, float_type lid_velocity, float_type nu_, float_type delta_t_, float_type dx = 1.0, std::string output_file_) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity), nu(nu_), delta_t(delta_t_), dx(dx), output_file(output_file_){
 
         total_cells = 1;
         for(int s : dimensions) total_cells *= s;
@@ -92,11 +93,9 @@ public:
             f_next[i].resize(total_cells, 0.0);
         }
 
-        u.resize(total_cells);
-        for(int cell = 0; cell < total_cells; ++cell) {
-            u[cell].fill(0.0);
+        for(int i = 0; i < d; ++i) {
+            u[i].resize(total_cells, 0.0);
         }
-        rho.resize(total_cells, 1.0);
 
         // strides computation
         int current_stride = 1;
@@ -110,7 +109,7 @@ public:
     std::array<std::vector<float_type>, q> f_next;
     float_type rho, rho_wall, rho_lid, u_lid, nu, delta_t, dx;
     const std::string output_file;
-    std::vector<std::array<float_type, d>> u;
+    std::array<std::vector<float_type>, d> u;
 
     // To swap f_current and f_next
     void swap_buffers();
@@ -141,7 +140,7 @@ public:
     void write_vtk(const std::vector<float_type>& data, const std::string& field_name);
     
     // Write a vector field to VTK file for visualization (overload)
-    void write_vtk(const std::vector<std::array<float_type, d>>& data, const std::string& field_name);
+    void write_vtk(const std::vector<std::array<float_type, Descriptor::d>>& data, const std::string& field_name);
     
 };
 
