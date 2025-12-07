@@ -91,7 +91,7 @@ public:
      */
     std::array<int, d> strides;
 
-    Lattice(std::array<int, d> dimensions, float_type lid_velocity, float_type nu_, float_type delta_t_, float_type dx = 1.0, std::string output_file_) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity), nu(nu_), delta_t(delta_t_), dx(dx), output_file(output_file_){
+    Lattice(std::array<int, d> dimensions, float_type lid_velocity, float_type nu_, float_type dx = 1.0, std::string output_file_) : sizes(dimensions), f(q), u_lid(lid_velocity), nu(nu_), dx(dx), output_file(output_file_){
         // total cells computation
         total_cells = 1;
         for(int s : dimensions) total_cells *= s;
@@ -119,9 +119,8 @@ public:
      *   Density (rho) and velocity (u) fields
      *   Physical parameters and output file
      */
-    std::array<std::vector<float_type>, q> f_current;
-    std::array<std::vector<float_type>, q> f_next;
-    float_type rho_init, rho_wall, rho_lid, u_lid, nu, delta_t, dx;
+    std::array<std::vector<float_type>, q> f;
+    float_type rho_init, rho_wall, rho_lid, u_lid, nu, dx;
     std::vector<float_type> rho;
     std::array<std::vector<float_type>, d> u;
     const std::string output_file;
@@ -130,7 +129,7 @@ public:
     /*
      *   Swap the distribution function buffers (f_current and f_next)
      */
-    void swap_buffers();
+    void swap_buffers(/*f_next, rho_next, u_next*/);
 
     /*
      *   Handle boundary values

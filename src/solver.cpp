@@ -31,7 +31,7 @@ void Solver<Descriptor, float_type>::stream_collide(const int i, const float_typ
 
     const int c_i[Descriptor::d] =  Descriptor::c[i];
     const float_type w_i = Descriptor::w[i];
-    const std::vector<float_type> &f_current = lattice.f_current[i];
+    const std::vector<float_type> &f_current = lattice.f[i];
 
     /*
      *  Iterates over the entire lattice computing f_eq, f_star and f_i for the
@@ -49,7 +49,7 @@ void Solver<Descriptor, float_type>::stream_collide(const int i, const float_typ
 
             // Here we may compute sigma (stress tensor)
 
-            float_type f_star = compute_star(f_i, f_eq, tau, delta_t);
+            float_type f_star = compute_star(f_i, f_eq, inv_tau_star);
 
             float_type rho_w = 0.0;
             std::array<float_type, Descriptor::d> u_w();
@@ -72,8 +72,6 @@ void Solver<Descriptor, float_type>::stream_collide(const int i, const float_typ
             /*
              *  Compute the contribute that f_i gives to rho_next and u_next.
              */
-            float_type &rho_next = lattice.rho_next[index];
-            std::array<float_type, Descriptor::d> &u_next = lattice.u_next[index];
             if (i == 0) {
                 rho_next = f_i;
                 u_next = prod(c_i, f_i);
@@ -96,17 +94,20 @@ template <isDescriptor Descriptor, std::floating_point float_type>
 void Solver<Descriptor, float_type>::solve(
         const unsigned long n_iterations,
         const float_type delta_t) {
-   
     /*
      *  Since tau and delta_t are always used as a ratio between them
      *  and it is constant over the entire simulation, we compute it
      *  with respect of tau's relation with problem's parameters.
      */
     const float_type inv_tau_star = 1.0 / (
-                (lattice.nu * lattice.delta_t * inv_cs2) / 
+                (lattice.nu * delta_t * inv_cs2) / 
                 (lattice.dx * lattice.dx) + 
                 0.5
             );
+
+    std::array<std::vector<float_type>, Descriptor::q> f_next;
+    std::array<std::vector<float_type>, Descriptor::d> u_next;
+    std::vector<float_type> rho_next;
 
     // write output
     for (unsigned long n_iter = 0; n_iter < n_iterations; ++n_iter) {
