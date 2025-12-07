@@ -7,9 +7,9 @@ template <isDescriptor Descriptor, std::floating_point float_type>
 void Solver<Descriptor, float_type>::stream_collide(
             const int i,
             const float_type inv_tau_star,
-            std::array<std::vector<float_type>, Descriptor::q> f_next,
-            std::array<std::vector<float_type>, Descriptor::d> u_next,
-            std::vector<float_type> rho_next) {
+            std::array<std::vector<float_type>, Descriptor::q> &f_next,
+            std::array<std::vector<float_type>, Descriptor::d> &u_next,
+            std::vector<float_type> &rho_next) {
     /*
      *  Lambda function to compute the scalar-vector product.
      */
@@ -64,13 +64,13 @@ void Solver<Descriptor, float_type>::stream_collide(
          *  otherwise compute the propagation with the push method.
          */
         if (lattice.isAtBound(index, i, rho_w, u_w)) { // adapt it according to Lattice
-            int i_opp = Descriptor::opposite[i];
+            int i_opp = Descriptor::i_opp[i];
             f_i = f_star - 2.0 * w_i * rho_w * scalar_prod(c_i, u_w) * inv_cs2;
-            lattice.f[i_opp][index] = f_i;
+            lattice.f_next[i_opp][index] = f_i;
         } else {
-            int next_index = lattice.get_next_index(index, i);
+            int next_index = lattice.get_next_index(index, c_i);
             f_i = f_star;
-            lattice.f[i][next_index] = f_i;
+            lattice.f_next[i][next_index] = f_i;
         }
 
         /*
