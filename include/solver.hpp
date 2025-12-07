@@ -74,7 +74,12 @@ private:
      *  for every direction. The function also computes density and velocity of each
      *  cell of the lattice.
      */
-    void stream_collide(const int i, const float_type inv_tau_star);
+    void stream_collide(
+            const int i,
+            const float_type inv_tau_star,
+            std::array<std::vector<float_type>, Descriptor::q> f_next,
+            std::array<std::vector<float_type>, Descriptor::d> u_next,
+            std::vector<float_type> rho_next);
     
 public:
 

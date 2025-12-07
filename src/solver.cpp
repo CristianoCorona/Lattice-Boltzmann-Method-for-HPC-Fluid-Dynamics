@@ -4,7 +4,12 @@
  *  stream_collide implementation, i is the direction in which it computes the step.
  */
 template <isDescriptor Descriptor, std::floating_point float_type>
-void Solver<Descriptor, float_type>::stream_collide(const int i, const float_type inv_tau_star) {
+void Solver<Descriptor, float_type>::stream_collide(
+            const int i,
+            const float_type inv_tau_star,
+            std::array<std::vector<float_type>, Descriptor::q> f_next,
+            std::array<std::vector<float_type>, Descriptor::d> u_next,
+            std::vector<float_type> rho_next) {
     /*
      *  Lambda function to compute the scalar-vector product.
      */
@@ -38,50 +43,47 @@ void Solver<Descriptor, float_type>::stream_collide(const int i, const float_typ
      *  given direction i and summing the contribution to the next density and
      *  velocity of the cells.
      */
-    #pragma omp parallel for schedule(static) collapse(2)
-    for (int y = 0; y < lattice.sizes[1]; ++y) {
-        for (int x = 0; x < lattice.sizes[0]; ++x) {
-            int index = lattice.idx(x, y);
-            std::array<float_type, Descriptor::d> u = lattice.u[index];
-            float_type rho = lattice.rho[index];
-            float_type f_i = f_current[index];
+    #pragma omp parallel for schedule(static)
+    for(int index = 0; index < lattice.total_cells; ++index) {
+        std::array<float_type, Descriptor::d> u = lattice.u[index];
+        float_type rho = lattice.rho[index];
+        float_type f_i = f_current[index];
 
-            float_type f_eq = compute_eq(c_i, w_i, rho, u);
+        float_type f_eq = compute_eq(c_i, w_i, rho, u);
 
-            // Here we may compute sigma (stress tensor)
+        // Here we may compute sigma (stress tensor)
 
-            float_type f_star = compute_star(f_i, f_eq, inv_tau_star);
+        float_type f_star = compute_star(f_i, f_eq, inv_tau_star);
 
-            float_type rho_w = 0.0;
-            std::array<float_type, Descriptor::d> u_w{};
+        float_type rho_w = 0.0;
+        std::array<float_type, Descriptor::d> u_w{};
 
-            /*
-             *  Checks if the current cell is a boundary one, if so applies
-             *  the bounce back method with the boundary parameters rho_w and u_w,
-             *  otherwise compute the propagation with the push method.
-             */
-            if (lattice.isAtBound({x, y}, i, rho_w, u_w)) { // adapt it according to Lattice
-                int i_opp = Descriptor::i_opp[i];
-                f_i = f_star - 2.0 * w_i * rho_w * scalar_prod(c_i, u_w) * inv_cs2;
-                lattice.f_next[i_opp][index] = f_i;
-            } else {
-                int next_index = (y + c_i[1]) * nx + (x + c_i[0]);
-                f_i = f_star;
-                lattice.f_next[i][next_index] = f_i;
-            }
+        /*
+         *  Checks if the current cell is a boundary one, if so applies
+         *  the bounce back method with the boundary parameters rho_w and u_w,
+         *  otherwise compute the propagation with the push method.
+         */
+        if (lattice.isAtBound(index, i, rho_w, u_w)) { // adapt it according to Lattice
+            int i_opp = Descriptor::i_opp[i];
+            f_i = f_star - 2.0 * w_i * rho_w * scalar_prod(c_i, u_w) * inv_cs2;
+            lattice.f_next[i_opp][index] = f_i;
+        } else {
+            int next_index = lattice.get_next_index(index, c_i);
+            f_i = f_star;
+            lattice.f_next[i][next_index] = f_i;
+        }
 
-            /*
-             *  Compute the contribute that f_i gives to rho_next and u_next.
-             */
-            if (i == 0) {
-                rho_next = f_i;
-                u_next = prod(c_i, f_i);
-            } else {
-                rho_next += f_i;
-                u_next = vector_sum(u_next, prod(c_i, f_i));
-                if (i == Descriptor::q - 1) {
-                    u_next = prod(u_next, 1.0 / rho_next);
-                }
+        /*
+         *  Compute the contribute that f_i gives to rho_next and u_next.
+         */
+        if (i == 0) {
+            rho_next = f_i;
+            u_next = prod(c_i, f_i);
+        } else {
+            rho_next += f_i;
+            u_next = vector_sum(u_next, prod(c_i, f_i));
+            if (i == Descriptor::q - 1) {
+                u_next = prod(u_next, 1.0 / rho_next);
             }
         }
     }
