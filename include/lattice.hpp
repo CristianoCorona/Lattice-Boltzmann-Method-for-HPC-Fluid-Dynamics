@@ -121,7 +121,8 @@ public:
      */
     std::array<std::vector<float_type>, q> f_current;
     std::array<std::vector<float_type>, q> f_next;
-    float_type rho, rho_wall, rho_lid, u_lid, nu, delta_t, dx;
+    float_type rho_init, rho_wall, rho_lid, u_lid, nu, delta_t, dx;
+    std::vector<float_type> rho;
     std::array<std::vector<float_type>, d> u;
     const std::string output_file;
 
@@ -167,7 +168,7 @@ public:
     /*
      *   Write a vector field to VTK file for visualization (overload)
      */
-    void write_vtk(const std::vector<std::array<float_type, Descriptor::d>>& data, const std::string& field_name);
+    void write_vtk(const std::array<std::vector<float_type>, Descriptor::d>& data, const std::string& field_name);
     
 };
 

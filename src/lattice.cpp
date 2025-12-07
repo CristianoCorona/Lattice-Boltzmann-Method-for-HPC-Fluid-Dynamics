@@ -67,7 +67,7 @@ void Lattice<Descriptor, float_type>::write_vtk(const std::vector<float_type>& d
 
 // Write a vector field to VTK file for visualization
 template <isDescriptor Descriptor, std::floating_point float_type>
-void Lattice<Descriptor, float_type>::write_vtk(const std::vector<std::array<float_type, Descriptor::d>>& data, const std::string& field_name) {
+void Lattice<Descriptor, float_type>::write_vtk(const std::array<std::vector<float_type>, Descriptor::d>& data, const std::string& field_name) {
     
     std::ofstream file(output_file);
     if (!file.is_open()) return;
@@ -92,7 +92,7 @@ void Lattice<Descriptor, float_type>::write_vtk(const std::vector<std::array<flo
 
     for (int cell = 0; cell < total_cells; ++cell) {
         for (int k = 0; k < Descriptor::d; ++k) {
-            file << data[cell][k] << " ";
+            file << data[k][cell] << " ";
         }
         if (Descriptor::d == 2) {
             file << "0.0";
