@@ -98,8 +98,7 @@ public:
 
         // resize vectors
         for(int i = 0; i < q; ++i) {
-            f_current[i].resize(total_cells, 0.0); 
-            f_next[i].resize(total_cells, 0.0);
+            f[i].resize(total_cells, 0.0); 
         }
 
         for(int i = 0; i < d; ++i) {
@@ -132,9 +131,11 @@ public:
     void swap_buffers(/*f_next, rho_next, u_next*/);
 
     /*
-     *   Handle boundary values
+     *   This function checks if the given coordinates are on a boundary
+     *   If so, it sets the boundary density value (rho_b) accordingly
+     *   Returns true if on boundary, false otherwise
      */
-    //void boundary_values(const std::vector<int> &coords, float_type &rho_b);
+    bool boundary_values(int index, int direction, float_type &rho_b, float_type &u_b);
 
     /*
      *   Optimized indexing function
