@@ -38,6 +38,7 @@ void Solver<Descriptor, float_type>::stream_collide(const int i, const float_typ
      *  given direction i and summing the contribution to the next density and
      *  velocity of the cells.
      */
+    #pragma omp parallel for schedule(static) collapse(2)
     for (int y = 0; y < lattice.sizes[1]; ++y) {
         for (int x = 0; x < lattice.sizes[0]; ++x) {
             int index = lattice.idx(x, y);
