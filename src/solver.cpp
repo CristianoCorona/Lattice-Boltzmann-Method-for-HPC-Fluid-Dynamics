@@ -9,25 +9,25 @@ void Solver<Descriptor, float_type>::stream_collide(const int i, const float_typ
      *  Lambda function to compute the scalar-vector product.
      */
     constexpr auto prod = [](auto &a, auto b) {
-        std::array<float_type, Descriptor::d> res();
+        std::array<float_type, Descriptor::d> res{};
         for (int i = 0; i < Descriptor::d; ++i) {
-            res += static_cast<float_type>(a[i]) * static_cast<float_type>(b);
+            res[i] += static_cast<float_type>(a[i]) * static_cast<float_type>(b);
         }
 
         return res;
-    }
+    };
 
     /*
      *  Lambda function to compute the vector sum.
      */
     constexpr auto vector_sum = [](auto &a, auto &b) {
-        std::array<float_type, Descriptor::d> res();
+        std::array<float_type, Descriptor::d> res{};
         for (int i = 0; i < Descriptor::d; ++i) {
             res[i] += static_cast<float_type>(a[i]) + static_cast<float_type>(b[i]);
         }
 
         return res;
-    }
+    };
 
     const int c_i[Descriptor::d] =  Descriptor::c[i];
     const float_type w_i = Descriptor::w[i];
@@ -53,7 +53,7 @@ void Solver<Descriptor, float_type>::stream_collide(const int i, const float_typ
             float_type f_star = compute_star(f_i, f_eq, inv_tau_star);
 
             float_type rho_w = 0.0;
-            std::array<float_type, Descriptor::d> u_w();
+            std::array<float_type, Descriptor::d> u_w{};
 
             /*
              *  Checks if the current cell is a boundary one, if so applies

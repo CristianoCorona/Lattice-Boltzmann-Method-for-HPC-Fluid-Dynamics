@@ -39,7 +39,7 @@ private:
         }
 
         return res;
-    }
+    };
 
     /*
      *  Helper function to compute equilibrium in a single direction.
