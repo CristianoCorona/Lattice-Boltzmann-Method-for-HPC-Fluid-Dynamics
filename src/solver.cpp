@@ -64,13 +64,13 @@ void Solver<Descriptor, float_type>::stream_collide(
          *  otherwise compute the propagation with the push method.
          */
         if (lattice.isAtBound(index, i, rho_w, u_w)) { // adapt it according to Lattice
-            int i_opp = Descriptor::i_opp[i];
+            int i_opp = Descriptor::opposite[i];
             f_i = f_star - 2.0 * w_i * rho_w * scalar_prod(c_i, u_w) * inv_cs2;
-            lattice.f_next[i_opp][index] = f_i;
+            lattice.f[i_opp][index] = f_i;
         } else {
-            int next_index = lattice.get_next_index(index, c_i);
+            int next_index = lattice.get_next_index(index, i);
             f_i = f_star;
-            lattice.f_next[i][next_index] = f_i;
+            lattice.f[i][next_index] = f_i;
         }
 
         /*
