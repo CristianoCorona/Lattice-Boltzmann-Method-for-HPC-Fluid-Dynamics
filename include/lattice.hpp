@@ -67,27 +67,36 @@ struct D3Q19 : public LatticeDescriptor<3, 19> {
     static constexpr std::array<int, 19> opposite = {0, 2, 1, 4, 3, 6, 5, 10, 9, 8, 7, 14, 13, 12, 11, 18, 17, 16, 15};
 };
 
-
+// Lattice for LBM simulation
+// Handles:
+// - Distribution functions (f_current and f_next)
+// - Data storage for velocity field (u) and density (rho) 
+// - Indexing and boundary conditions
+// - VTK output for visualization
 template <isDescriptor Descriptor, std::floating_point float_type = double> //customizable precision, default double
 class Lattice {
 
 public:
 
+    /*
+     *   Lattice dimensions and properties
+     */ 
     static constexpr int d = Descriptor::d;
     static constexpr int q = Descriptor::q;
-
-    // sizes in each dimention
     std::array<int, d> sizes;
     int total_cells;
 
-    // pre-computed strides for indexing
+    /*
+     *   Pre-computed strides for indexing
+     */
     std::array<int, d> strides;
 
     Lattice(std::array<int, d> dimensions, float_type lid_velocity, float_type nu_, float_type delta_t_, float_type dx = 1.0, std::string output_file_) : sizes(dimensions), f_current(q), f_next(q), u_lid(lid_velocity), nu(nu_), delta_t(delta_t_), dx(dx), output_file(output_file_){
-
+        // total cells computation
         total_cells = 1;
         for(int s : dimensions) total_cells *= s;
 
+        // resize vectors
         for(int i = 0; i < q; ++i) {
             f_current[i].resize(total_cells, 0.0); 
             f_next[i].resize(total_cells, 0.0);
@@ -105,20 +114,32 @@ public:
         }
     }
 
+    /*
+     *   Distribution functions (f_current and f_next)
+     *   Density (rho) and velocity (u) fields
+     *   Physical parameters and output file
+     */
     std::array<std::vector<float_type>, q> f_current;
     std::array<std::vector<float_type>, q> f_next;
     float_type rho, rho_wall, rho_lid, u_lid, nu, delta_t, dx;
-    const std::string output_file;
     std::array<std::vector<float_type>, d> u;
+    const std::string output_file;
 
-    // To swap f_current and f_next
+
+    /*
+     *   Swap the distribution function buffers (f_current and f_next)
+     */
     void swap_buffers();
 
-    // functions for boundaries
+    /*
+     *   Handle boundary values
+     */
     //void boundary_values(const std::vector<int> &coords, float_type &rho_b);
 
-    // functions for indices
-    //variadic template for indexing (general for 2D/3D)
+    /*
+     *   Optimized indexing function
+     *   Variadic template for indexing (general for 2D/3D)
+     */
     template <typename... Ints>
     [[nodiscard]] inline int idx(Ints...coords) const {
         static_assert(sizeof...(coords) == d, "Number of coordinates must match lattice dimension");
@@ -133,13 +154,19 @@ public:
         }
     } 
 
-    //Initialize equilibrium with u=0 and rho=1
+    /*
+     *   Initialize equilibrium with u=0 and rho=1
+     */
     void initialize_equilibrium();
     
-    // Write a scalar field vector to VTK file for visualization
+    /*
+     *   Write a scalar field vector to VTK file for visualization
+     */
     void write_vtk(const std::vector<float_type>& data, const std::string& field_name);
     
-    // Write a vector field to VTK file for visualization (overload)
+    /*
+     *   Write a vector field to VTK file for visualization (overload)
+     */
     void write_vtk(const std::vector<std::array<float_type, Descriptor::d>>& data, const std::string& field_name);
     
 };
