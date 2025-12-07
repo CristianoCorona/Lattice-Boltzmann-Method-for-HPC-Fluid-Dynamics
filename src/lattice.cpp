@@ -3,7 +3,7 @@
 // Swap f_current and f_next buffers (ping-pong)
 template <isDescriptor Descriptor, std::floating_point float_type>
 void Lattice<Descriptor, float_type>::swap_buffers() {
-    std::swap(f_current, f_next);
+    // std::swap(f_current, f_next);
 }
 
 // Implemented in .hpp as inline function for performance
@@ -26,8 +26,7 @@ void Lattice<Descriptor, float_type>::initialize_equilibrium() {
     for (int cell = 0; cell < total_cells; ++cell) {
         for (int i = 0; i < q; ++i) {
             // f_eq_i = w_i * rho (when u = 0)
-            f_current[i][cell] = Descriptor::w[i] * rho[cell];
-            f_next[i][cell] = f_current[i][cell];
+            f[i][cell] = Descriptor::w[i] * rho_init;
         }
     }
 }
