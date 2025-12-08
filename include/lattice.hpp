@@ -103,7 +103,7 @@ public:
             float_type dx = 1.0, 
             float_type rho_init_=1.0,
             float_type rho_wall_=1.0,
-            float_type rho_lid_=1.0,
+            float_type rho_lid_=1.0
             ) 
             : sizes(dimensions), 
             u_lid(lid_velocity), 
