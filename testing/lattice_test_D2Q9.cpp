@@ -9,7 +9,7 @@ using Descriptor = D2Q9<float_type>;
 
 TEST_CASE("Lattice initialization and indexing", "[lattice]") {
 
-    // test parameters
+    // Test parameters
     std::array<int, Descriptor::d> dimensions = {10, 5}; 
     float_type lid_velocity = 0.1;
     float_type nu = 0.01;
@@ -79,8 +79,26 @@ TEST_CASE("Lattice initialization and indexing", "[lattice]") {
         REQUIRE(lattice.neighbor_offsets[7] == -dimensions[0] - 1);  // c_7
         // c_8 -> -nx + 1 = -9
         REQUIRE(lattice.neighbor_offsets[8] == -dimensions[0] + 1);   // c_8
-        
-    
+    }
+
+    SECTION("Equilibrium initialization") {
+        lattice.initialize_equilibrium();
+        // Check that initial rho is set to rho_init
+        for (auto& val : lattice.rho) {
+            REQUIRE(val == Approx(lattice.rho_init));
+        }
+        // Check that initial velocity is zero
+        for (int i = 0; i < Descriptor::d; ++i) {
+            for (auto& val : lattice.u[i]) {
+                REQUIRE(val == Approx(0.0));
+            }
+        }
+        // Check that initial distribution functions are set correctly
+        for (int i = 0; i < Descriptor::q; ++i) {
+            for (int cell = 0; cell < lattice.total_cells; ++cell) {
+                REQUIRE(lattice.f[i][cell] == Approx(Descriptor::w[i] * lattice.rho_init));
+            }
+        }
     }
 }
 

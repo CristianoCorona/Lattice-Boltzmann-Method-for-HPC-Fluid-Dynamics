@@ -6,21 +6,15 @@ void Lattice<Descriptor, float_type>::swap_buffers() {
     // std::swap(f_current, f_next);
 }
 
-// Implemented in .hpp as inline function for performance
-/*template <isDescriptor Descriptor, std::floating_point float_type>
-template <typename... Ints>
-int Lattice<Descriptor, float_type>::idx(Ints...coords) {
-    int indices[d] = {coords...};
-    int index = 0;
-    int stride = 1;
-    for(int i = 0; i < d; ++i) {
-        index += indices[i] * stride;
-        stride *= sizes[i];
-    }
-    return index;
-}*/
+template <isDescriptor Descriptor, std::floating_point float_type>
+bool Lattice<Descriptor, float_type>::isAtBound(int index, int direction, float_type &rho_b, float_type &u_b) {
+    // Implement boundary checking logic here
+    // For example, check if index corresponds to a wall or lid
+    // Set rho_b and u_b accordingly
+    return false; // Placeholder return value
+}
 
-// Initialize equilibrium with u=0 and rho=1, called only in the beginning of the simulation
+// Initialize equilibrium with u=0 and rho=rho_init, called only in the beginning of the simulation
 template <isDescriptor Descriptor, std::floating_point float_type>
 void Lattice<Descriptor, float_type>::initialize_equilibrium() {
     for (int cell = 0; cell < total_cells; ++cell) {

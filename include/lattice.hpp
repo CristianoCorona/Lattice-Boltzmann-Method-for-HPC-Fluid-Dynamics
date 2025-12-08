@@ -125,6 +125,7 @@ public:
             u[i].resize(total_cells, 0.0);
         }
         rho.resize(total_cells, 0.0);
+        rho.assign(total_cells, rho_init);
 
         // strides computation
         int current_stride = 1;
