@@ -98,14 +98,14 @@ public:
 
     Lattice(std::array<int, d> dimensions, 
             float_type lid_velocity, 
-            float_type nu_, 
+            float_type nu_,
+            std::string output_file_, 
             float_type dx = 1.0, 
             float_type rho_init_=1.0,
             float_type rho_wall_=1.0,
             float_type rho_lid_=1.0,
-            std::string output_file_) 
+            ) 
             : sizes(dimensions), 
-            f(q), 
             u_lid(lid_velocity), 
             nu(nu_), dx(dx), 
             rho_init(rho_init_),
