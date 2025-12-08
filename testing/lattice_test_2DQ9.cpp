@@ -44,6 +44,44 @@ TEST_CASE("Lattice initialization and indexing", "[lattice]") {
         REQUIRE(lattice.strides[0] == 1);       // x stride
         REQUIRE(lattice.strides[1] == 10);      // y stride
     }
+
+    SECTION("Indexing function") {
+        // Testing some known indices
+        // (0,0) -> 0 (first cell)
+        REQUIRE(lattice.idx(0, 0) == 0);
+        // (1,0) -> 1
+        REQUIRE(lattice.idx(1, 0) == 1);
+        // (0,1) -> 10
+        REQUIRE(lattice.idx(0, 1) == 10);
+        // (5,3) -> 35
+        REQUIRE(lattice.idx(5, 3) == 35);
+        // (9,4) -> 49 (last cell)
+        REQUIRE(lattice.idx(9, 4) == 49);
+    }
+
+    SECTION("Precomputed neighbor offsets correctness") {
+        // D2Q9 expected offsets:
+        // c_0 -> 0
+        REQUIRE(lattice.neighbor_offsets[0] == 0);    // c_0
+        // c_1 -> 1
+        REQUIRE(lattice.neighbor_offsets[1] == 1);    // c_1
+        // c_2 -> nx = 10
+        REQUIRE(lattice.neighbor_offsets[2] == dimensions[0]);   // c_2
+        // c_3 -> -1
+        REQUIRE(lattice.neighbor_offsets[3] == -1);   // c_3
+        // c_4 -> -nx = -10 
+        REQUIRE(lattice.neighbor_offsets[4] == -dimensions[0]);  // c_4
+        // c_5 -> nx + 1 = 11
+        REQUIRE(lattice.neighbor_offsets[5] == dimensions[0] + 1);   // c_5
+        // c_6 -> nx - 1 = 9
+        REQUIRE(lattice.neighbor_offsets[6] == dimensions[0] - 1);    // c_6
+        // c_7 -> -nx - 1 = -11
+        REQUIRE(lattice.neighbor_offsets[7] == -dimensions[0] - 1);  // c_7
+        // c_8 -> -nx + 1 = -9
+        REQUIRE(lattice.neighbor_offsets[8] == -dimensions[0] + 1);   // c_8
+        
+    
+    }
 }
 
 
