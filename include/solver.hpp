@@ -1,5 +1,6 @@
 #include "lattice.hpp"
 #include <array>
+#include <vector>
 
 #ifndef SOLVER_HPP
 #define SOLVER_HPP
@@ -78,7 +79,7 @@ private:
             const int i,
             const float_type inv_tau_star,
             std::array<std::vector<float_type>, Descriptor::q> &f_next,
-            std::vector<std::array<float_type, Descriptor::d>> &u_next,
+            std::array<std::vector<float_type>, Descriptor::d> &u_next,
             std::vector<float_type> &rho_next);
     
 public:
@@ -86,7 +87,7 @@ public:
     /*
      *  Constructor takes the lattice as argument.
      */
-    Solver(Lattice<Descriptor, float_type> &lattice_) : lattice(lattice_); 
+    Solver(Lattice<Descriptor, float_type> &lattice_) : lattice(lattice_) {}; 
 
     /*
      *  Performs the simulation over a user-defined number of iterations (n_iterations)

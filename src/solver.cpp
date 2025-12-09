@@ -8,11 +8,12 @@ void Solver<Descriptor, float_type>::stream_collide(
             const int i,
             const float_type inv_tau_star,
             std::array<std::vector<float_type>, Descriptor::q> &f_next,
-            std::vector<std::array<float_type, Descriptor::d>> &u_next,
+            std::array<std::vector<float_type>, Descriptor::d> &u_next,
             std::vector<float_type> &rho_next) {
     /*
      *  Lambda function to compute the scalar-vector product.
      */
+    /*
     constexpr auto prod = [](auto &a, auto b) {
         std::array<float_type, Descriptor::d> res{};
         for (int i = 0; i < Descriptor::d; ++i) {
@@ -21,10 +22,12 @@ void Solver<Descriptor, float_type>::stream_collide(
 
         return res;
     };
+    */
 
     /*
      *  Lambda function to compute the vector sum.
      */
+    /*
     constexpr auto vector_sum = [](auto &a, auto &b) {
         std::array<float_type, Descriptor::d> res{};
         for (int i = 0; i < Descriptor::d; ++i) {
@@ -33,8 +36,9 @@ void Solver<Descriptor, float_type>::stream_collide(
 
         return res;
     };
+    */
 
-    const int c_i[Descriptor::d] =  Descriptor::c[i];
+    const std::array<int, Descriptor::d> c_i = Descriptor::c[i];
     const float_type w_i = Descriptor::w[i];
     const std::vector<float_type> &f_current = lattice.f[i];
 
@@ -45,7 +49,10 @@ void Solver<Descriptor, float_type>::stream_collide(
      */
     #pragma omp parallel for schedule(static)
     for(int index = 0; index < lattice.total_cells; ++index) {
-        std::array<float_type, Descriptor::d> u = lattice.u[index];
+        std::array<float_type, Descriptor::d> u;
+        for (int d = 0; d < Descriptor::d; ++d) {
+            u[d] = lattice.u[d][index];
+        }
         float_type rho = lattice.rho[index];
         float_type f_i = f_current[index];
 
@@ -78,12 +85,19 @@ void Solver<Descriptor, float_type>::stream_collide(
          */
         if (i == 0) {
             rho_next[index] = f_i;
-            u_next[index] = prod(c_i, f_i);
+            for (int d = 0; d < Descriptor::d; ++d) {
+                u_next[d][index] = static_cast<float_type>(c_i[d]) * f_i;
+            }
         } else {
             rho_next[index] += f_i;
-            u_next[index] = vector_sum(u_next[index], prod(c_i, f_i));
+            for (int d = 0; d < Descriptor::d; ++d) {
+                u_next[d][index] += static_cast<float_type>(c_i[d]) * f_i;
+            }
             if (i == Descriptor::q - 1) {
-                u_next[index] = prod(u_next[index], 1.0 / rho_next[index]);
+                float_type inv_rho = 1.0 / rho_next[index];
+                for (int d = 0; d < Descriptor::d; ++d) {
+                    u_next[d][index] *= inv_rho;
+                }
             }
         }
     }
@@ -109,8 +123,16 @@ void Solver<Descriptor, float_type>::solve(
             );
 
     std::array<std::vector<float_type>, Descriptor::q> f_next;
-    std::vector<std::array<float_type, Descriptor::d>> u_next;
+    std::array<std::vector<float_type>, Descriptor::d> u_next;
     std::vector<float_type> rho_next;
+
+    for (int i = 0; i < Descriptor::q; ++i) {
+        f_next[i].resize(lattice.total_cells, 0.0);
+    }
+    for (int i = 0; i < Descriptor::d; ++i) {
+        u_next[i].resize(lattice.total_cells, 0.0);
+    }
+    rho_next.resize(lattice.total_cells, 0.0);
 
     // write output
     for (unsigned long n_iter = 0; n_iter < n_iterations; ++n_iter) {
