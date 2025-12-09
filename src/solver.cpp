@@ -8,7 +8,7 @@ void Solver<Descriptor, float_type>::stream_collide(
             const int i,
             const float_type inv_tau_star,
             std::array<std::vector<float_type>, Descriptor::q> &f_next,
-            std::array<std::vector<float_type>, Descriptor::d> &u_next,
+            std::vector<std::array<float_type, Descriptor::d>> &u_next,
             std::vector<float_type> &rho_next) {
     /*
      *  Lambda function to compute the scalar-vector product.
@@ -66,24 +66,24 @@ void Solver<Descriptor, float_type>::stream_collide(
         if (lattice.isAtBound(index, i, rho_w, u_w)) { // adapt it according to Lattice
             int i_opp = Descriptor::i_opp[i];
             f_i = f_star - 2.0 * w_i * rho_w * scalar_prod(c_i, u_w) * inv_cs2;
-            lattice.f_next[i_opp][index] = f_i;
+            f_next[i_opp][index] = f_i;
         } else {
             int next_index = lattice.get_next_index(index, c_i);
             f_i = f_star;
-            lattice.f_next[i][next_index] = f_i;
+            f_next[i][next_index] = f_i;
         }
 
         /*
          *  Compute the contribute that f_i gives to rho_next and u_next.
          */
         if (i == 0) {
-            rho_next = f_i;
-            u_next = prod(c_i, f_i);
+            rho_next[index] = f_i;
+            u_next[index] = prod(c_i, f_i);
         } else {
-            rho_next += f_i;
-            u_next = vector_sum(u_next, prod(c_i, f_i));
+            rho_next[index] += f_i;
+            u_next[index] = vector_sum(u_next[index], prod(c_i, f_i));
             if (i == Descriptor::q - 1) {
-                u_next = prod(u_next, 1.0 / rho_next);
+                u_next[index] = prod(u_next[index], 1.0 / rho_next[index]);
             }
         }
     }
@@ -109,7 +109,7 @@ void Solver<Descriptor, float_type>::solve(
             );
 
     std::array<std::vector<float_type>, Descriptor::q> f_next;
-    std::array<std::vector<float_type>, Descriptor::d> u_next;
+    std::vector<std::array<float_type, Descriptor::d>> u_next;
     std::vector<float_type> rho_next;
 
     // write output
@@ -119,7 +119,7 @@ void Solver<Descriptor, float_type>::solve(
          *  computing f_next by calling stream_collide.
          */
         for (int i = 0; i < Descriptor::q; ++i) {
-            stream_collide(i, inv_tau_star);
+            stream_collide(i, inv_tau_star, f_next, u_next, rho_next);
         }
         // write output
         // swap
