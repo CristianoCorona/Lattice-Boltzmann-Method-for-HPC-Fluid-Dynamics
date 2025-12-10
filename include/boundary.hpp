@@ -8,12 +8,20 @@
 template<isDescriptor Descriptor, std::floating_point float_type>
 class WallsBoundary {
     public: 
+
+        static constexpr int d = Descriptor::d;
+        static constexpr int q = Descriptor::q;
         
         WallsBoundary(int Nx, int Ny, int Nz, float_type wall_speed, Direction<Descriptor::d> moving_wall) : 
             speed(wall_speed),
-            index_moving_wall(static_cast<unsigned char>(moving_wall))
-            requires (Descriptor::d == 3)
+            requires (d == 3)
         {
+            if(moving_wall != Direction<d>::NODIR) {
+                is_moving_wall = true;
+                index_moving_wall = static_cast<unsigned char>(moving_wall - 1);
+            } else {
+                is_moving_wall = false;
+            }
             walls = {
                 0, Nx - 1,    // LEFT, RIGHT
                 0, Ny - 1,    // BOTTOM, TOP
@@ -23,24 +31,36 @@ class WallsBoundary {
 
         WallsBoundary(int Nx, int Ny, float_type wall_speed, Direction<Descriptor::d> moving_wall) : 
             speed(wall_speed),
-            index_moving_wall(static_cast<unsigned char>(moving_wall))
-            requires (Descriptor::d == 2)
+            requires (d == 2)
         {
+            if(moving_wall != Direction<d>::NODIR) {
+                is_moving_wall = true;
+                index_moving_wall = static_cast<unsigned char>(moving_wall - 1);
+            } else {
+                is_moving_wall = false;
+            }
             walls = {
                 0, Nx - 1,    // LEFT, RIGHT
                 0, Ny - 1     // BOTTOM, TOP
             };
         }
 
-        std::array<int, 2 * (Descriptor::d) > walls;
+        float_type get_speed_of_wall(Direction<Descriptor::d> wall);
 
-        float_type wall_speed;
+        Direction<Descriptor::d> is_at_bound(int cell_index);
 
-        unsigned char index_moving_wall;
+        bool will_get_bounced_back(Direction<Descriptor::d> wall, int direction);
 
-        float_type get_speed_of_wall(int cell_index, int direction);
 
-        bool is_at_bound(int cell_index, int direction);
+    protected:
+    
+        static const std::array<int, 2 * (d) > walls;
+
+        const float_type wall_speed;
+
+        const bool is_moving_wall;
+
+        const unsigned char index_moving_wall;
 
 };
 

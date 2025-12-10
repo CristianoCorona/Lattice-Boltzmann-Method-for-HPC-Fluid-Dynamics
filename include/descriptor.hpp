@@ -65,12 +65,13 @@ struct Direction;
 template <>
 struct Direction<3> {
     enum class Value : uint8_t {
-        LEFT   = 0,
-        RIGHT  = 1,
-        BOTTOM = 2,
-        TOP    = 3,
-        BACK   = 4,
-        FRONT  = 5
+        NODIR   = 0,
+        LEFT  = 1,
+        RIGHT = 2,
+        BOTTOM = 3,
+        TOP   = 4,
+        FRONT  = 5,
+        BACK = 6
     };
     using enum Value;
 };
@@ -78,10 +79,11 @@ struct Direction<3> {
 template <>
 struct Direction<2> {
     enum class Value : uint8_t {
-        LEFT   = 0,
-        RIGHT  = 1,
-        BOTTOM = 2,
-        TOP    = 3,
+        NODIR = 0,
+        LEFT  = 1,
+        RIGHT = 2,
+        BOTTOM= 3,
+        TOP   = 4
     };
     using enum Value;
 };
