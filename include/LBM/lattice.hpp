@@ -1,11 +1,6 @@
 // Lattice data structures for LBM simulation
 // - u (velocity field)
 // - rho (density field)
-
-#ifndef LATTICE_HPP
-#define LATTICE_HPP
-
-#include "descriptor.hpp"
 #include <concepts>
 #include <vector>
 #include <array>
@@ -13,6 +8,9 @@
 #include <fstream>
 #include "descriptor.hpp"
 #include "boundary.hpp"
+
+#ifndef LATTICE_HPP
+#define LATTICE_HPP
 
 // Lattice for LBM simulation
 // Handles:
@@ -24,6 +22,8 @@ template <isDescriptor Descriptor, std::floating_point float_type = double> //cu
 class Lattice {
 
 public:
+
+    using DirEnum = typename Direction<Descriptor::d>::Value;
 
     /*
      *   Lattice dimensions and properties
@@ -47,12 +47,8 @@ public:
     Lattice(std::array<int, d> dimensions, 
             float_type lid_velocity, 
             float_type nu_,
-            std::string output_file_, 
-            float_type dx = 1.0, 
-            float_type rho_init_=1.0,
-            float_type rho_wall_=1.0,
-            float_type rho_lid_=1.0,
-            Direction<d> direction_
+            DirEnum moving_wall_,
+            std::string output_file_ = "output.vtk"
             ) 
             : sizes(dimensions), 
             u_lid(lid_velocity), 
@@ -61,7 +57,10 @@ public:
             rho_wall(rho_wall_),
             rho_lid(rho_lid_),
             output_file(output_file_),
-            direction(direction_)
+            float_type dx = 1.0, 
+            float_type rho_init_=1.0,
+            float_type rho_wall_=1.0,
+            float_type rho_lid_=1.0,
             {
         // total cells computation
         total_cells = 1;
@@ -105,6 +104,9 @@ public:
             }
             neighbor_offsets[i] = offset;
         }
+
+        // initialize walls boundary
+        walls_boundary = WallsBoundary<Descriptor, float_type>(sizes, u_lid, moving_wall_);
     }
 
     /*
@@ -118,13 +120,18 @@ public:
     std::array<std::vector<float_type>, d> u;
     const std::string output_file;
 
-    WallsBoundary bound;
+    /*
+     * Boundary handling
+     */
+    WallsBoundary <Descriptor, float_type> walls_boundary;
 
 
     /*
      *   Swap the distribution function buffers (f_current and f_next)
      */
-    void swap_buffers(std::array<std::vector<float_type>, q> f, std::vector<float_type> rho, std::array<std::vector<float_type>, d> u);
+    void swap_buffers(std::array<std::vector<float_type>, q> f,
+                      std::vector<float_type> rho, 
+                      std::array<std::vector<float_type>, d> u);
 
     /*
      *   This function checks if the given node (passed through linearized index for generality)

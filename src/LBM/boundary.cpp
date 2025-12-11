@@ -39,6 +39,14 @@ bool WallsBoundary<Descriptor, float_type>::will_get_bounced_back(DirEnum wall, 
     return false;
 }
 
+template<isDescriptor Descriptor, std::floating_point float_type>
+bool WallsBoundary<Descriptor, float_type>::isMovingWall(DirEnum wall) {
+    if(is_moving_wall && (wall == static_cast<DirEnum>(index_moving_wall + 1))) {
+        return true;
+    }
+    return false;
+}
+
 template class WallsBoundary<D2Q9<float>, float>;
 template class WallsBoundary<D2Q9<double>, double>;
 template class WallsBoundary<D3Q19<float>, float>;

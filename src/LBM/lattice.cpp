@@ -13,10 +13,15 @@ void Lattice<Descriptor, float_type>::swap_buffers(std::array<std::vector<float_
 
 template <isDescriptor Descriptor, std::floating_point float_type>
 bool Lattice<Descriptor, float_type>::isAtBound(int index, int direction, float_type &rho_b, float_type &u_b) {
-    // Implement boundary checking logic here
-    // For example, check if index corresponds to a wall or lid
-    // Set rho_b and u_b accordingly
-    return false; // Placeholder return value
+    Direction<d> wall = walls_boundary.is_at_bound(index);
+    if (wall != Direction<d>::NODIR || !walls_boundary.will_get_bounced_back(wall, direction)) {
+        // set boundary velocity
+        u_b = walls_boundary.get_speed_of_wall(wall);
+        // set boundary density
+        rho_b = !walls_boundary.isMovingWall(wall)? rho_wall : rho_lid;
+        return true;
+    }
+    return false; // not at boundary
 }
 
 // Initialize equilibrium with u=0 and rho=rho_init, called only in the beginning of the simulation

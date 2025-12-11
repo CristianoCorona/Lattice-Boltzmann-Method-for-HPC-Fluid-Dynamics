@@ -1,6 +1,6 @@
 #include <vector>
 #include <array>
-#include "LBM/descriptor.hpp"
+#include "descriptor.hpp"
 
 #ifndef BOUNDARY_HPP
 #define BOUNDARY_HPP
@@ -35,6 +35,8 @@ class WallsBoundary {
         DirEnum is_at_bound(int cell_index);
 
         bool will_get_bounced_back(DirEnum wall, int direction);
+
+        bool isMovingWall(DirEnum wall);
 
     protected:
     
