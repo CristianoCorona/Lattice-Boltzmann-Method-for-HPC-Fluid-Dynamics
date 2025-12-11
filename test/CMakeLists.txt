@@ -14,13 +14,11 @@ set(SOURCE_FILES
 )
 
 # ---- Create test executable ----
-add_executable(run_tests
-    SOURCE_FILES
-)
+add_executable(run_tests ${SOURCE_FILES})
 
 # ---- Link SFLA library and Catch2 ----
 target_link_libraries(run_tests PRIVATE
-    ${PROJECT_NAME}
+    LBM_lib
     Catch2::Catch2WithMain
 )
 

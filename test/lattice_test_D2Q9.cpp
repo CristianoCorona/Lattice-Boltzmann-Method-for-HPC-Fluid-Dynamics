@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 
-#include "catch2.hpp"
+#include <catch2/catch_test_macros.hpp>
 #include "lattice.hpp"
 
 using float_type = double;
