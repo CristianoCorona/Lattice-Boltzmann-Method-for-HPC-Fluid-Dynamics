@@ -1,9 +1,14 @@
 #include "lattice.hpp"
+#include <utility>
 
-// Swap f_current and f_next buffers (ping-pong)
+// Swap f, rho and u
 template <isDescriptor Descriptor, std::floating_point float_type>
-void Lattice<Descriptor, float_type>::swap_buffers() {
-    // std::swap(f_current, f_next);
+void Lattice<Descriptor, float_type>::swap_buffers(std::array<std::vector<float_type>, q> f,
+                                                    std::vector<float_type> rho, 
+                                                    std::array<std::vector<float_type>, d> u) {
+    std::swap(this->f, f);
+    std::swap(this->rho, rho);
+    std::swap(this->u, u);
 }
 
 template <isDescriptor Descriptor, std::floating_point float_type>
