@@ -1,4 +1,4 @@
-#include "solver.hpp"
+#include "LBM/solver.hpp"
 
 /*
  *  stream_collide implementation, i is the direction in which it computes the step.
@@ -10,33 +10,6 @@ void Solver<Descriptor, float_type>::stream_collide(
             std::array<std::vector<float_type>, Descriptor::q> &f_next,
             std::array<std::vector<float_type>, Descriptor::d> &u_next,
             std::vector<float_type> &rho_next) {
-    /*
-     *  Lambda function to compute the scalar-vector product.
-     */
-    /*
-    constexpr auto prod = [](auto &a, auto b) {
-        std::array<float_type, Descriptor::d> res{};
-        for (int i = 0; i < Descriptor::d; ++i) {
-            res[i] += static_cast<float_type>(a[i]) * static_cast<float_type>(b);
-        }
-
-        return res;
-    };
-    */
-
-    /*
-     *  Lambda function to compute the vector sum.
-     */
-    /*
-    constexpr auto vector_sum = [](auto &a, auto &b) {
-        std::array<float_type, Descriptor::d> res{};
-        for (int i = 0; i < Descriptor::d; ++i) {
-            res[i] += static_cast<float_type>(a[i]) + static_cast<float_type>(b[i]);
-        }
-
-        return res;
-    };
-    */
 
     const std::array<int, Descriptor::d> c_i = Descriptor::c[i];
     const float_type w_i = Descriptor::w[i];
@@ -134,7 +107,8 @@ void Solver<Descriptor, float_type>::solve(
     }
     rho_next.resize(lattice.total_cells, 0.0);
 
-    // write output
+    write_vtk(lattice.rho, "rho");
+    write_vtk(lattice.u, "u");
     for (unsigned long n_iter = 0; n_iter < n_iterations; ++n_iter) {
         /*
          *  This loop iterates over each possible direction, defined by the LatticeDescriptor,
@@ -143,7 +117,13 @@ void Solver<Descriptor, float_type>::solve(
         for (int i = 0; i < Descriptor::q; ++i) {
             stream_collide(i, inv_tau_star, f_next, u_next, rho_next);
         }
-        // write output
-        // swap
+
+        // adapt it with the Lattice function
+        std::swap(lattice.f, f_next);
+        std::swap(lattice.u, u_next);
+        std::swap(lattice.rho, rho_next);
+
+        write_vtk(lattice.rho, "rho");
+        write_vtk(lattice.u, "u");
     }
 }
