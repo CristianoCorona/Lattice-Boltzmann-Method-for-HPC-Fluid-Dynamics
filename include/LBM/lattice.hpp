@@ -11,6 +11,7 @@
 #include <array>
 #include <string>
 #include <fstream>
+#include "descriptor.hpp"
 
 // Lattice for LBM simulation
 // Handles:
