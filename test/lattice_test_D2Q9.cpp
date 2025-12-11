@@ -1,7 +1,8 @@
 #define CATCH_CONFIG_MAIN
 
 #include <catch2/catch_test_macros.hpp>
-#include "lattice.hpp"
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include "LBM/lattice.hpp"
 
 using float_type = double;
 using Descriptor = D2Q9<float_type>;
@@ -19,6 +20,7 @@ TEST_CASE("Lattice initialization and indexing", "[lattice]") {
         dimensions, 
         lid_velocity, 
         nu,
+        Direction<Descriptor::d>::TOP,
         "test_output.vtk");
 
     SECTION("Dimension correctness") {
@@ -85,18 +87,18 @@ TEST_CASE("Lattice initialization and indexing", "[lattice]") {
         lattice.initialize_equilibrium();
         // Check that initial rho is set to rho_init
         for (auto& val : lattice.rho) {
-            REQUIRE(val == Approx(lattice.rho_init));
+            REQUIRE_THAT(val, Catch::Matchers::WithinRel(lattice.rho_init, 0.001));
         }
         // Check that initial velocity is zero
         for (int i = 0; i < Descriptor::d; ++i) {
             for (auto& val : lattice.u[i]) {
-                REQUIRE(val == Approx(0.0));
+                REQUIRE_THAT(val, Catch::Matchers::WithinRel(0.0, 0.001));
             }
         }
         // Check that initial distribution functions are set correctly
         for (int i = 0; i < Descriptor::q; ++i) {
             for (int cell = 0; cell < lattice.total_cells; ++cell) {
-                REQUIRE(lattice.f[i][cell] == Approx(Descriptor::w[i] * lattice.rho_init));
+                REQUIRE_THAT(lattice.f[i][cell], Catch::Matchers::WithinRel(Descriptor::w[i] * lattice.rho_init, 0.001));
             }
         }
     }
