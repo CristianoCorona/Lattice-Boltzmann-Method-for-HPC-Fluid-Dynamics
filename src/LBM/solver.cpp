@@ -107,8 +107,8 @@ void Solver<Descriptor, float_type>::solve(
     }
     rho_next.resize(lattice.total_cells, 0.0);
 
-    write_vtk(lattice.rho, "rho");
-    write_vtk(lattice.u, "u");
+    lattice.write_vtk(lattice.rho, "rho", 0);
+    lattice.write_vtk(lattice.u, "u", 0);
     for (unsigned long n_iter = 0; n_iter < n_iterations; ++n_iter) {
         /*
          *  This loop iterates over each possible direction, defined by the LatticeDescriptor,
@@ -118,12 +118,12 @@ void Solver<Descriptor, float_type>::solve(
             stream_collide(i, inv_tau_star, f_next, u_next, rho_next);
         }
 
-        // adapt it with the Lattice function
-        std::swap(lattice.f, f_next);
-        std::swap(lattice.u, u_next);
-        std::swap(lattice.rho, rho_next);
-
-        write_vtk(lattice.rho, "rho");
-        write_vtk(lattice.u, "u");
+        lattice.swap_buffers(f_next, rho_next, u_next);
+        if ((n_iter + 1) % 20 == 0) {
+            lattice.write_vtk(lattice.rho, "rho", n_iter + 1);
+            lattice.write_vtk(lattice.u, "u", n_iter + 1);
+        }
     }
+    lattice.write_vtk(lattice.rho, "rho", n_iterations);
+    lattice.write_vtk(lattice.u, "u", n_iterations);
 }
