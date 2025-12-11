@@ -1,4 +1,4 @@
-#include "lattice.hpp"
+#include "LBM/lattice.hpp"
 
 // Swap f_current and f_next buffers (ping-pong)
 template <isDescriptor Descriptor, std::floating_point float_type>

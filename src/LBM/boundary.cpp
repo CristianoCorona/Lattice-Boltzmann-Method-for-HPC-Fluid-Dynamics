@@ -1,4 +1,4 @@
-#include "boundary.hpp"
+#include "LBM/boundary.hpp"
 
 template<isDescriptor Descriptor, std::floating_point float_type>
 float_type WallsBoundary<Descriptor, float_type>::get_speed_of_wall(Direction<Descriptor::d> wall) {

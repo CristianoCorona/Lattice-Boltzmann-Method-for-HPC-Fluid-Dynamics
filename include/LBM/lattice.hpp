@@ -2,14 +2,15 @@
 // - u (velocity field)
 // - rho (density field)
 
+#ifndef LATTICE_HPP
+#define LATTICE_HPP
+
+#include "descriptor.hpp"
 #include <concepts>
 #include <vector>
 #include <array>
 #include <string>
 #include <fstream>
-
-#ifndef LATTICE_HPP
-#define LATTICE_HPP
 
 // Lattice for LBM simulation
 // Handles:

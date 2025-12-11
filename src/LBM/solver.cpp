@@ -1,4 +1,4 @@
-#include "solver.hpp"
+#include "LBM/solver.hpp"
 
 /*
  *  stream_collide implementation, i is the direction in which it computes the step.
@@ -134,7 +134,8 @@ void Solver<Descriptor, float_type>::solve(
     }
     rho_next.resize(lattice.total_cells, 0.0);
 
-    // write output
+    write_vtk(lattice.rho, "rho");
+    write_vtk(lattice.u, "u");
     for (unsigned long n_iter = 0; n_iter < n_iterations; ++n_iter) {
         /*
          *  This loop iterates over each possible direction, defined by the LatticeDescriptor,
@@ -143,7 +144,8 @@ void Solver<Descriptor, float_type>::solve(
         for (int i = 0; i < Descriptor::q; ++i) {
             stream_collide(i, inv_tau_star, f_next, u_next, rho_next);
         }
-        // write output
         // swap
+        write_vtk(lattice.rho, "rho");
+        write_vtk(lattice.u, "u");
     }
 }
