@@ -10,7 +10,7 @@ FetchContent_MakeAvailable(Catch2)
 
 # ----- Test source files ------
 set(SOURCE_FILES
-    
+    lattice_test_D2Q9.cpp 
 )
 
 # ---- Create test executable ----
@@ -20,7 +20,7 @@ add_executable(run_tests
 
 # ---- Link SFLA library and Catch2 ----
 target_link_libraries(run_tests PRIVATE
-    LBM
+    ${PROJECT_NAME}
     Catch2::Catch2WithMain
 )
 
