@@ -48,20 +48,21 @@ public:
             float_type lid_velocity, 
             float_type nu_,
             DirEnum moving_wall_,
-            std::string output_file_ = "output.vtk"
+            std::string output_file_ = "output.vtk",
+            float_type dx = 1.0, 
+            float_type rho_init_=1.0,
+            float_type rho_wall_=1.0,
+            float_type rho_lid_=1.0
             ) 
             : sizes(dimensions), 
             u_lid(lid_velocity), 
+            output_file(output_file_),
             nu(nu_), dx(dx), 
             rho_init(rho_init_),
             rho_wall(rho_wall_),
             rho_lid(rho_lid_),
-            output_file(output_file_),
-            float_type dx = 1.0, 
-            float_type rho_init_=1.0,
-            float_type rho_wall_=1.0,
-            float_type rho_lid_=1.0,
-            {
+            walls_boundary(dimensions, lid_velocity, moving_wall_)
+    {
         // total cells computation
         total_cells = 1;
         for(int s : dimensions) total_cells *= s;
@@ -104,9 +105,6 @@ public:
             }
             neighbor_offsets[i] = offset;
         }
-
-        // initialize walls boundary
-        walls_boundary = WallsBoundary<Descriptor, float_type>(sizes, u_lid, moving_wall_);
     }
 
     /*

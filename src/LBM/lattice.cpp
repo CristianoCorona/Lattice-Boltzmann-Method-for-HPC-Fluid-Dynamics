@@ -1,4 +1,4 @@
-#include "lattice.hpp"
+#include "LBM/lattice.hpp"
 #include <utility>
 
 // Swap f, rho and u
@@ -13,7 +13,7 @@ void Lattice<Descriptor, float_type>::swap_buffers(std::array<std::vector<float_
 
 template <isDescriptor Descriptor, std::floating_point float_type>
 bool Lattice<Descriptor, float_type>::isAtBound(int index, int direction, float_type &rho_b, float_type &u_b) {
-    Direction<d> wall = walls_boundary.is_at_bound(index);
+    DirEnum wall = walls_boundary.is_at_bound(index);
     if (wall != Direction<d>::NODIR || !walls_boundary.will_get_bounced_back(wall, direction)) {
         // set boundary velocity
         u_b = walls_boundary.get_speed_of_wall(wall);
@@ -38,9 +38,8 @@ void Lattice<Descriptor, float_type>::initialize_equilibrium() {
 // Write a scalar field vector to VTK file for visualization
 template <isDescriptor Descriptor, std::floating_point float_type>
 void Lattice<Descriptor, float_type>::write_vtk(const std::vector<float_type>& data, const std::string& field_name, int iter) {
-    const std::string filename = output_file + "-" + std::to_string(iter) + ".vtk";
-
-    std::ofstream file(filename);
+    
+    std::ofstream file(output_file);
     if (!file.is_open()) return;
 
     file << "# vtk DataFile Version 2.0\n";
@@ -72,9 +71,8 @@ void Lattice<Descriptor, float_type>::write_vtk(const std::vector<float_type>& d
 // Write a vector field to VTK file for visualization
 template <isDescriptor Descriptor, std::floating_point float_type>
 void Lattice<Descriptor, float_type>::write_vtk(const std::array<std::vector<float_type>, Descriptor::d>& data, const std::string& field_name, int iter) {
-    const std::string filename = output_file + "-" + std::to_string(iter) + ".vtk";
-
-    std::ofstream file(filename);
+    
+    std::ofstream file(output_file);
     if (!file.is_open()) return;
 
     file << "# vtk DataFile Version 2.0\n";
