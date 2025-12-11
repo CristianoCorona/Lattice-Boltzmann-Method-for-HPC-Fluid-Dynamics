@@ -28,8 +28,13 @@ Direction<Descriptor::d> WallsBoundary<Descriptor, float_type>::is_at_bound(int 
 template<isDescriptor Descriptor, std::floating_point float_type>
 bool WallsBoundary<Descriptor, float_type>::will_get_bounced_back(Direction<Descriptor::d> wall, int direction)
 {
-    if(bound_dir != Direction<d>::NODIR) {
-        //TODO
+    if(wall != Direction<d>::NODIR) {
+        if(Descriptor::c[direction][static_cast<int>(wall) / 2] == (static_cast<int>(wall) % 2 == 1) * 2 - 1) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     return false;
 }
