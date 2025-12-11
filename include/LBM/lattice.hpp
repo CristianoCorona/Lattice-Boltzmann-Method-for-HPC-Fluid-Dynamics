@@ -12,6 +12,7 @@
 #include <string>
 #include <fstream>
 #include "descriptor.hpp"
+#include "boundary.hpp"
 
 // Lattice for LBM simulation
 // Handles:
@@ -50,7 +51,8 @@ public:
             float_type dx = 1.0, 
             float_type rho_init_=1.0,
             float_type rho_wall_=1.0,
-            float_type rho_lid_=1.0
+            float_type rho_lid_=1.0,
+            Direction<d> direction_
             ) 
             : sizes(dimensions), 
             u_lid(lid_velocity), 
@@ -58,7 +60,9 @@ public:
             rho_init(rho_init_),
             rho_wall(rho_wall_),
             rho_lid(rho_lid_),
-            output_file(output_file_){
+            output_file(output_file_),
+            direction(direction_)
+            {
         // total cells computation
         total_cells = 1;
         for(int s : dimensions) total_cells *= s;
@@ -113,6 +117,8 @@ public:
     std::vector<float_type> rho;
     std::array<std::vector<float_type>, d> u;
     const std::string output_file;
+
+    WallsBoundary bound;
 
 
     /*

@@ -1,5 +1,6 @@
 #include <concepts>
 #include <cstdint>
+#include <array>
 
 #ifndef UTILS_HPP
 #define UTILS_HPP
