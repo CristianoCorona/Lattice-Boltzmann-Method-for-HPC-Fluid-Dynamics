@@ -65,7 +65,7 @@ struct Direction;
 
 template <>
 struct Direction<3> {
-    enum class Value : uint8_t {
+    enum class Value : unsigned char {
         NODIR   = 0,
         LEFT  = 1,
         RIGHT = 2,
@@ -79,7 +79,7 @@ struct Direction<3> {
 
 template <>
 struct Direction<2> {
-    enum class Value : uint8_t {
+    enum class Value : unsigned char {
         NODIR = 0,
         LEFT  = 1,
         RIGHT = 2,

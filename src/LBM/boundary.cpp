@@ -1,8 +1,8 @@
 #include "LBM/boundary.hpp"
 
 template<isDescriptor Descriptor, std::floating_point float_type>
-float_type WallsBoundary<Descriptor, float_type>::get_speed_of_wall(Direction<Descriptor::d> wall) {
-    if(is_moving_wall && wall == static_cast<Direction<d>>(index_moving_wall + 1)) {
+float_type WallsBoundary<Descriptor, float_type>::get_speed_of_wall(DirEnum wall) {
+    if(is_moving_wall && wall == static_cast<DirEnum>(index_moving_wall + 1)) {
         return wall_speed;
     }
     return 0.0;
@@ -10,7 +10,7 @@ float_type WallsBoundary<Descriptor, float_type>::get_speed_of_wall(Direction<De
 
 
 template<isDescriptor Descriptor, std::floating_point float_type>
-Direction<Descriptor::d> WallsBoundary<Descriptor, float_type>::is_at_bound(int cell_index) {
+typename WallsBoundary<Descriptor, float_type>::DirEnum WallsBoundary<Descriptor, float_type>::is_at_bound(int cell_index) {
     int coord[d];
     for(int i = 0; i < d; ++i) {
         coord[i] = cell_index % (walls[2*i + 1] + 1);
@@ -18,7 +18,7 @@ Direction<Descriptor::d> WallsBoundary<Descriptor, float_type>::is_at_bound(int 
     }
     for(int i = 0; i < walls.size(); i++){
         if(coord[i/2] == walls[i] || coord[i/2] == walls[i]){
-            return static_cast<Direction<d>>(i);
+            return static_cast<DirEnum>(i);
         }
     }
     return Direction<d>::NODIR;
@@ -26,10 +26,10 @@ Direction<Descriptor::d> WallsBoundary<Descriptor, float_type>::is_at_bound(int 
 
 
 template<isDescriptor Descriptor, std::floating_point float_type>
-bool WallsBoundary<Descriptor, float_type>::will_get_bounced_back(Direction<Descriptor::d> wall, int direction)
+bool WallsBoundary<Descriptor, float_type>::will_get_bounced_back(DirEnum wall, int direction)
 {
-    if(wall != Direction<d>::NODIR) {
-        if(Descriptor::c[direction][static_cast<int>(wall) / 2] == (static_cast<int>(wall) % 2 == 1) * 2 - 1) {
+    if(!(wall == Direction<d>::NODIR)) {
+        if(Descriptor::c[direction][static_cast<unsigned char>(wall) / 2] == (static_cast<unsigned char>(wall) % 2 == 1) * 2 - 1) {
             return true;
         }
         else {
