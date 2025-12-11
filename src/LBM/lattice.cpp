@@ -32,9 +32,10 @@ void Lattice<Descriptor, float_type>::initialize_equilibrium() {
 
 // Write a scalar field vector to VTK file for visualization
 template <isDescriptor Descriptor, std::floating_point float_type>
-void Lattice<Descriptor, float_type>::write_vtk(const std::vector<float_type>& data, const std::string& field_name) {
-    
-    std::ofstream file(output_file);
+void Lattice<Descriptor, float_type>::write_vtk(const std::vector<float_type>& data, const std::string& field_name, int iter) {
+    const std::string filename = output_file + "-" + std::to_string(iter) + ".vtk";
+
+    std::ofstream file(filename);
     if (!file.is_open()) return;
 
     file << "# vtk DataFile Version 2.0\n";
@@ -65,9 +66,10 @@ void Lattice<Descriptor, float_type>::write_vtk(const std::vector<float_type>& d
 
 // Write a vector field to VTK file for visualization
 template <isDescriptor Descriptor, std::floating_point float_type>
-void Lattice<Descriptor, float_type>::write_vtk(const std::array<std::vector<float_type>, Descriptor::d>& data, const std::string& field_name) {
-    
-    std::ofstream file(output_file);
+void Lattice<Descriptor, float_type>::write_vtk(const std::array<std::vector<float_type>, Descriptor::d>& data, const std::string& field_name, int iter) {
+    const std::string filename = output_file + "-" + std::to_string(iter) + ".vtk";
+
+    std::ofstream file(filename);
     if (!file.is_open()) return;
 
     file << "# vtk DataFile Version 2.0\n";

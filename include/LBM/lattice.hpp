@@ -170,12 +170,12 @@ public:
     /*
      *   Write a scalar field vector to VTK file for visualization
      */
-    void write_vtk(const std::vector<float_type>& data, const std::string& field_name);
+    void write_vtk(const std::vector<float_type>& data, const std::string& field_name, int iter);
     
     /*
      *   Write a vector field to VTK file for visualization (overload)
      */
-    void write_vtk(const std::array<std::vector<float_type>, Descriptor::d>& data, const std::string& field_name);
+    void write_vtk(const std::array<std::vector<float_type>, Descriptor::d>& data, const std::string& field_name, int iter);
     
 };
 
