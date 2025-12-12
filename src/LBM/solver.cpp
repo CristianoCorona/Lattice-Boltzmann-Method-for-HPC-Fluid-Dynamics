@@ -43,7 +43,7 @@ void Solver<Descriptor, float_type>::stream_collide(
          *  the bounce back method with the boundary parameters rho_w and u_w,
          *  otherwise compute the propagation with the push method.
          */
-        if (lattice.isAtBound(index, i, rho_w, u_w)) { // adapt it according to Lattice
+        if (lattice.is_at_boundary(index, i, rho_w, u_w)) { // adapt it according to Lattice
             int i_opp = Descriptor::i_opp[i];
             f_i = f_star - 2.0 * w_i * rho_w * scalar_prod(c_i, u_w) * inv_cs2;
             f_next[i_opp][index] = f_i;
