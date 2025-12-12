@@ -127,3 +127,6 @@ void Solver<Descriptor, float_type>::solve(
     lattice.write_vtk(lattice.rho, "rho", n_iterations);
     lattice.write_vtk(lattice.u, "u", n_iterations);
 }
+
+template class Solver<D2Q9<float>, float>;
+template class Solver<D2Q9<double>, double>;

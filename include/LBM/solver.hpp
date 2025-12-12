@@ -33,7 +33,16 @@ private:
      *  Lambda function used to compute the scalar product between two arrays,
      *  it returns the value as a float_type.
      */
-    static constexpr float_type scalar_prod = [](std::array<float_type, Descriptor::d> &a, std::array<float_type, Descriptor::d> &b) {
+    float_type scalar_prod(const std::array<float_type, Descriptor::d> &a, const std::array<float_type, Descriptor::d> &b) {
+        float_type res = 0.0;
+        for (int i = 0; i < Descriptor::d; ++i) {
+            res += static_cast<float_type>(a[i]) * static_cast<float_type>(b[i]);
+        }
+
+        return res;
+    };
+
+    float_type scalar_prod(const std::array<int, Descriptor::d> &a, const std::array<float_type, Descriptor::d> &b) {
         float_type res = 0.0;
         for (int i = 0; i < Descriptor::d; ++i) {
             res += static_cast<float_type>(a[i]) * static_cast<float_type>(b[i]);
