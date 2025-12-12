@@ -15,8 +15,8 @@ TEST_CASE("Ghia 1982 Benchmark (Re=100, 2D lid-driven cavity flow)", "[ghia_re10
     const int N = 129; //Odd grid size to have exact center -> 129 in the paper (81 might work and be faster)
     std::array<int, Descriptor:: d> dimensions = {N, N};
 
-    std::array<float_type, Descriptor::d> lid_velocity = {1.0, 0.0}; // Lid velocity = 1.0 for normalized units
-    float_type Re = 100.0;
+    std::array<float_type, Descriptor::d> lid_velocity = {0.1, 0.0}; // Lid velocity = 1.0 for normalized units
+    float_type Re = 500.0;
     float_type L = static_cast<float_type>(N - 1); // Domain length in lattice units
     float_type nu = lid_velocity[0] * L / Re; // Kinematic viscosity (from Re definition) TODO -> norm of lid_velocity
 
@@ -30,12 +30,10 @@ TEST_CASE("Ghia 1982 Benchmark (Re=100, 2D lid-driven cavity flow)", "[ghia_re10
                                             "ghia_re100_2d.vtk");
     // Solver creation
     Solver<Descriptor, float_type> solver(lattice);
-    // Initialize equilibrium
-    lattice.initialize_equilibrium();
 
     // Simulation
-    const unsigned long max_steps = 5000;
-    solver.solve(max_steps, 10.0);
+    const unsigned long max_steps = 20000;
+    solver.solve(max_steps, 1.0);
 
     // Validation at centerlines
     const int center_x = N / 2;

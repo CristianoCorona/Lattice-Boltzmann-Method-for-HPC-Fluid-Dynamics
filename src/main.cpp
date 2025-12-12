@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
             lid_velocity,
             nu,
             Direction<D2Q9<float>::d>::TOP);
-
+    
     Solver<D2Q9<float>, float> solver(lattice);
 
     unsigned long n_iter = 1000;

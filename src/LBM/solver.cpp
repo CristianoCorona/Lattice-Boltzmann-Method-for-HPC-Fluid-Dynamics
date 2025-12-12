@@ -7,9 +7,7 @@ template <isDescriptor Descriptor, std::floating_point float_type>
 void Solver<Descriptor, float_type>::stream_collide(
             const int i,
             const float_type inv_tau_star,
-            std::array<std::vector<float_type>, Descriptor::q> &f_next,
-            std::array<std::vector<float_type>, Descriptor::d> &u_next,
-            std::vector<float_type> &rho_next) {
+            std::array<std::vector<float_type>, Descriptor::q> &f_next) {
 
     const std::array<int, Descriptor::d> c_i = Descriptor::c[i];
     const float_type w_i = Descriptor::w[i];
@@ -45,36 +43,55 @@ void Solver<Descriptor, float_type>::stream_collide(
          */
         if (lattice.is_at_bound(index, i, rho_w, u_w)) { // adapt it according to Lattice
             int i_opp = Descriptor::opposite[i];
-            f_i = f_star - 2.0 * w_i * rho_w * scalar_prod(c_i, u_w) * inv_cs2;
-            f_next[i_opp][index] = f_i;
+            float_type f_bounced = f_star - 2.0 * w_i * rho_w * scalar_prod(c_i, u_w) * inv_cs2;
+            f_next[i_opp][index] = f_bounced;
         } else {
             int next_index = lattice.get_next_index(index, i);
-            f_i = f_star;
-            f_next[i][next_index] = f_i;
-        }
-
-        /*
-         *  Compute the contribute that f_i gives to rho_next and u_next.
-         */
-        if (i == 0) {
-            rho_next[index] = f_i;
-            for (int d = 0; d < Descriptor::d; ++d) {
-                u_next[d][index] = static_cast<float_type>(c_i[d]) * f_i;
-            }
-        } else {
-            rho_next[index] += f_i;
-            for (int d = 0; d < Descriptor::d; ++d) {
-                u_next[d][index] += static_cast<float_type>(c_i[d]) * f_i;
-            }
-            if (i == Descriptor::q - 1) {
-                float_type inv_rho = 1.0 / rho_next[index];
-                for (int d = 0; d < Descriptor::d; ++d) {
-                    u_next[d][index] *= inv_rho;
-                }
-            }
+            f_next[i][next_index] = f_star;
         }
     }
 }
+
+/*
+ *  Function to compute rho_next and u_next.
+ */
+template <isDescriptor Descriptor, std::floating_point float_type>
+void Solver<Descriptor, float_type>::update_moments(
+            const std::array<std::vector<float_type>, Descriptor::q> &f_next,
+            std::vector<float_type> &rho_next,
+            std::array<std::vector<float_type>, Descriptor::d> &u_next) {
+    
+    std::array<const float_type*, Descriptor::q> f_ptrs;
+    for (int i = 0; i < Descriptor::q; ++i) {
+        f_ptrs[i] = f_next[i].data();
+    }
+
+    #pragma omp parallel for schedule(static)
+    for (int index = 0; index < lattice.total_cells; ++index) {
+        float_type local_rho = 0.0;
+        std::array<float_type, Descriptor::d> local_u{};
+        
+        for (int i = 0; i < Descriptor::q; ++i) {
+            float_type val = f_ptrs[i][index];
+            local_rho += val;
+            for (int d = 0; d < Descriptor::d; ++d) {
+                local_u[d] += static_cast<float_type>(Descriptor::c[i][d]) * val;
+            }
+        }
+
+        rho_next[index] = local_rho;
+        if (local_rho > 1e-9) {
+            float_type inv_rho = 1.0 / local_rho;
+            for (int d = 0; d < Descriptor::d; ++d) {
+                u_next[d][index] = local_u[d] * inv_rho;
+            }
+        } else {
+            for (int d = 0; d < Descriptor::d; ++d) {
+                u_next[d][index] = 0.0;
+            }
+        }
+    }
+}    
 
 /*
  *  solve implementation, n_iterations is the length of the simulation
@@ -107,6 +124,8 @@ void Solver<Descriptor, float_type>::solve(
     }
     rho_next.resize(lattice.total_cells, 0.0);
 
+    lattice.initialize_equilibrium();
+
     lattice.write_vtk(lattice.rho, "rho", 0);
     lattice.write_vtk(lattice.u, "u", 0);
     for (unsigned long n_iter = 0; n_iter < n_iterations; ++n_iter) {
@@ -115,8 +134,10 @@ void Solver<Descriptor, float_type>::solve(
          *  computing f_next by calling stream_collide.
          */
         for (int i = 0; i < Descriptor::q; ++i) {
-            stream_collide(i, inv_tau_star, f_next, u_next, rho_next);
+            stream_collide(i, inv_tau_star, f_next);
         }
+
+        update_moments(f_next, rho_next, u_next);
 
         lattice.swap_buffers(f_next, rho_next, u_next);
         if ((n_iter + 1) % 100 == 0) {
