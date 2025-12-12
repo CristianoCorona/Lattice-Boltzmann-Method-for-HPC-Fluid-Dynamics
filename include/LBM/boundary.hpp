@@ -14,7 +14,7 @@ class WallsBoundary {
         static constexpr int d = Descriptor::d;
         static constexpr int q = Descriptor::q;
         
-        WallsBoundary(std::array<int, Descriptor::d> dim, float_type wall_speed, DirEnum moving_wall) : 
+        WallsBoundary(std::array<int, Descriptor::d> dim, std::array<float_type, d> wall_speed, DirEnum moving_wall) : 
             wall_speed(wall_speed)
         {
             if(!(moving_wall == Direction<d>::NODIR)) {
@@ -30,7 +30,7 @@ class WallsBoundary {
         }
         
 
-        float_type get_speed_of_wall(DirEnum wall);
+        std::array<float_type, Descriptor::d> get_speed_of_wall(DirEnum wall);
 
         DirEnum is_at_bound(int cell_index);
 
@@ -42,7 +42,7 @@ class WallsBoundary {
     
         std::array<int, 2 * (d) > walls;
 
-        const float_type wall_speed;
+        const std::array<float_type, d> wall_speed;
 
         bool is_moving_wall;
 

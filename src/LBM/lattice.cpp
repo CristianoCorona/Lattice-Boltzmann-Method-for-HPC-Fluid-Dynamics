@@ -12,7 +12,7 @@ void Lattice<Descriptor, float_type>::swap_buffers(std::array<std::vector<float_
 }
 
 template <isDescriptor Descriptor, std::floating_point float_type>
-bool Lattice<Descriptor, float_type>::isAtBound(int index, int direction, float_type &rho_b, float_type &u_b) {
+bool Lattice<Descriptor, float_type>::is_at_bound(int index, int direction, float_type &rho_b, std::array<float_type, d> &u_b) {
     DirEnum wall = walls_boundary.is_at_bound(index);
     if (wall != Direction<d>::NODIR || !walls_boundary.will_get_bounced_back(wall, direction)) {
         // set boundary velocity

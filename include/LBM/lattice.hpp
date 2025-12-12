@@ -45,7 +45,7 @@ public:
     std::array<int,q> neighbor_offsets;
 
     Lattice(std::array<int, d> dimensions, 
-            float_type lid_velocity, 
+            std::array<float_type, d> lid_velocity, 
             float_type nu_,
             DirEnum moving_wall_,
             std::string output_file_ = "output.vtk",
@@ -113,7 +113,8 @@ public:
      *   Physical parameters and output file
      */
     std::array<std::vector<float_type>, q> f;
-    float_type rho_init, rho_wall, rho_lid, u_lid, nu, dx;
+    float_type rho_init, rho_wall, rho_lid, nu, dx;
+    std::array<float_type, d> u_lid;
     std::vector<float_type> rho;
     std::array<std::vector<float_type>, d> u;
     const std::string output_file;
@@ -138,7 +139,7 @@ public:
      *   the boundary density value (rho_b) accordingly.
      *   Returns true if on boundary, false otherwise
      */
-    bool isAtBound(int index, int direction, float_type &rho_b, float_type &u_b);
+    bool is_at_bound(int index, int direction, float_type &rho_b, std::array<float_type, d> &u_b);
 
     /*
      *   Function to get the next index in the lattice given the current index and direction c_i

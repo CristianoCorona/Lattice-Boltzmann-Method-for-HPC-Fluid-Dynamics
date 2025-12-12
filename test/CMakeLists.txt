@@ -10,7 +10,8 @@ FetchContent_MakeAvailable(Catch2)
 
 # ----- Test source files ------
 set(SOURCE_FILES
-    lattice_test_D2Q9.cpp 
+    lattice_test_D2Q9.cpp
+    test_ghia_Re100_2D.cpp
 )
 
 # ---- Create test executable ----

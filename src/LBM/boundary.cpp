@@ -1,11 +1,11 @@
 #include "LBM/boundary.hpp"
 
 template<isDescriptor Descriptor, std::floating_point float_type>
-float_type WallsBoundary<Descriptor, float_type>::get_speed_of_wall(DirEnum wall) {
+std::array<float_type, Descriptor::d> WallsBoundary<Descriptor, float_type>::get_speed_of_wall(DirEnum wall) {
     if(is_moving_wall && wall == static_cast<DirEnum>(index_moving_wall + 1)) {
         return wall_speed;
     }
-    return 0.0;
+    return std::array<float_type, Descriptor::d>{};
 }
 
 
