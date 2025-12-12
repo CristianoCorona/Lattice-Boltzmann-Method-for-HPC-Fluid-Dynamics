@@ -10,15 +10,18 @@ std::array<float_type, Descriptor::d> WallsBoundary<Descriptor, float_type>::get
 
 
 template<isDescriptor Descriptor, std::floating_point float_type>
-typename WallsBoundary<Descriptor, float_type>::DirEnum WallsBoundary<Descriptor, float_type>::is_at_bound(int cell_index) {
+typename WallsBoundary<Descriptor, float_type>::DirEnum WallsBoundary<Descriptor, float_type>::is_at_bound(int cell_index, int direction) {
     int coord[d];
     for(int i = 0; i < d; ++i) {
         coord[i] = cell_index % (walls[2*i + 1] + 1);
         cell_index /= (walls[2*i + 1] + 1);
     }
     for(int i = 0; i < walls.size(); i++){
-        if(coord[i/2] == walls[i] || coord[i/2] == walls[i]){
-            return static_cast<DirEnum>(i);
+        if(coord[i/2] == walls[i]){
+            DirEnum wall = static_cast<DirEnum>(i + 1);
+            if (will_get_bounced_back(wall, direction)) {
+                return wall;
+            }
         }
     }
     return Direction<d>::NODIR;
@@ -28,8 +31,9 @@ typename WallsBoundary<Descriptor, float_type>::DirEnum WallsBoundary<Descriptor
 template<isDescriptor Descriptor, std::floating_point float_type>
 bool WallsBoundary<Descriptor, float_type>::will_get_bounced_back(DirEnum wall, int direction)
 {
-    if(!(wall == Direction<d>::NODIR)) {
-        if(Descriptor::c[direction][static_cast<unsigned char>(wall) / 2] == (static_cast<unsigned char>(wall) % 2 == 1) * 2 - 1) {
+    if(wall != Direction<d>::NODIR) {
+        unsigned char w = static_cast<unsigned char>(wall) - 1;
+        if(Descriptor::c[direction][w / 2] == (w % 2 == 1) * 2 - 1) {
             return true;
         }
         else {
@@ -38,6 +42,8 @@ bool WallsBoundary<Descriptor, float_type>::will_get_bounced_back(DirEnum wall, 
     }
     return false;
 }
+
+
 
 template<isDescriptor Descriptor, std::floating_point float_type>
 bool WallsBoundary<Descriptor, float_type>::isMovingWall(DirEnum wall) {

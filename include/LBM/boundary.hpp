@@ -32,7 +32,7 @@ class WallsBoundary {
 
         std::array<float_type, Descriptor::d> get_speed_of_wall(DirEnum wall);
 
-        DirEnum is_at_bound(int cell_index);
+        DirEnum is_at_bound(int cell_index, int direction);
 
         bool will_get_bounced_back(DirEnum wall, int direction);
 

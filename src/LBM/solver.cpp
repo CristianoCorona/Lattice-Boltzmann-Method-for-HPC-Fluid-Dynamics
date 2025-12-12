@@ -119,7 +119,7 @@ void Solver<Descriptor, float_type>::solve(
         }
 
         lattice.swap_buffers(f_next, rho_next, u_next);
-        if ((n_iter + 1) % 20 == 0) {
+        if ((n_iter + 1) % 100 == 0) {
             lattice.write_vtk(lattice.rho, "rho", n_iter + 1);
             lattice.write_vtk(lattice.u, "u", n_iter + 1);
         }

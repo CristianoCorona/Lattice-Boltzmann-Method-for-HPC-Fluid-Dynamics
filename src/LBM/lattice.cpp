@@ -13,8 +13,8 @@ void Lattice<Descriptor, float_type>::swap_buffers(std::array<std::vector<float_
 
 template <isDescriptor Descriptor, std::floating_point float_type>
 bool Lattice<Descriptor, float_type>::is_at_bound(int index, int direction, float_type &rho_b, std::array<float_type, d> &u_b) {
-    DirEnum wall = walls_boundary.is_at_bound(index);
-    if (wall != Direction<d>::NODIR || !walls_boundary.will_get_bounced_back(wall, direction)) {
+    DirEnum wall = walls_boundary.is_at_bound(index, direction);
+    if (wall != Direction<d>::NODIR) {
         // set boundary velocity
         u_b = walls_boundary.get_speed_of_wall(wall);
         // set boundary density
