@@ -139,7 +139,7 @@ void Solver<Descriptor, float_type>::solve(
         update_moments(f_next, rho_next, u_next);
 
         lattice.swap_buffers(f_next, rho_next, u_next);
-        if ((n_iter + 1) % 100 == 0) {
+        if ((n_iter + 1) % 10 == 0) {
             lattice.write_vtk(n_iter + 1);
         }
     }

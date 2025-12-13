@@ -3,9 +3,11 @@
 #include <LBM/LBM.hpp>
 
 int main(int argc, char *argv[]) {
-    std::array<int, D2Q9<float>::d> lattice_dim = {100, 100};
-    std::array<float, D2Q9<float>::d> lid_velocity = {1.0f, 0.0f};
-    float nu = 1.0f;
+    std::array<int, D2Q9<float>::d> lattice_dim = {129, 129};
+    std::array<float, D2Q9<float>::d> lid_velocity = {0.1f, 0.0f};
+    float Re = 100.0f;
+    float L = static_cast<float>(lattice_dim[0] - 1);
+    float nu = lid_velocity[0] * L / Re;
 
     Lattice<D2Q9<float>, float> lattice(
             lattice_dim,
@@ -15,8 +17,8 @@ int main(int argc, char *argv[]) {
     
     Solver<D2Q9<float>, float> solver(lattice);
 
-    unsigned long n_iter = 1000;
-    float delta_t = 0.1f;
+    unsigned long n_iter = 5000;
+    float delta_t = 1.0f;
     solver.solve(n_iter, delta_t);
 
     return 0;
