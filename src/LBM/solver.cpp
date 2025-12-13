@@ -126,8 +126,7 @@ void Solver<Descriptor, float_type>::solve(
 
     lattice.initialize_equilibrium();
 
-    lattice.write_vtk(lattice.rho, "rho", 0);
-    lattice.write_vtk(lattice.u, "u", 0);
+    lattice.write_vtk(0);
     for (unsigned long n_iter = 0; n_iter < n_iterations; ++n_iter) {
         /*
          *  This loop iterates over each possible direction, defined by the LatticeDescriptor,
@@ -141,12 +140,10 @@ void Solver<Descriptor, float_type>::solve(
 
         lattice.swap_buffers(f_next, rho_next, u_next);
         if ((n_iter + 1) % 100 == 0) {
-            lattice.write_vtk(lattice.rho, "rho", n_iter + 1);
-            lattice.write_vtk(lattice.u, "u", n_iter + 1);
+            lattice.write_vtk(n_iter + 1);
         }
     }
-    lattice.write_vtk(lattice.rho, "rho", n_iterations);
-    lattice.write_vtk(lattice.u, "u", n_iterations);
+    lattice.write_vtk(n_iterations);
 }
 
 template class Solver<D2Q9<float>, float>;
