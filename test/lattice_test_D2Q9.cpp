@@ -85,6 +85,7 @@ TEST_CASE("Lattice initialization and indexing", "[lattice]") {
 
     SECTION("Equilibrium initialization") {
         // Check that initial rho is set to rho_init
+        lattice.initialize_equilibrium();
         for (auto& val : lattice.rho) {
             REQUIRE_THAT(val, Catch::Matchers::WithinRel(lattice.rho_init, 0.001));
         }

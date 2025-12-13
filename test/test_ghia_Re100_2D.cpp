@@ -12,7 +12,7 @@ using Descriptor = D2Q9<float_type>;
 TEST_CASE("Ghia 1982 Benchmark (Re=100, 2D lid-driven cavity flow)", "[ghia_re100_2d]") {
 
     // Parameters setup
-    const int N = 129; //Odd grid size to have exact center -> 129 in the paper (81 might work and be faster)
+    const int N = 81; //Odd grid size to have exact center -> 129 in the paper (81 might work and be faster)
     std::array<int, Descriptor:: d> dimensions = {N, N};
 
     std::array<float_type, Descriptor::d> lid_velocity = {0.1, 0.0}; // Lid velocity = 1.0 for normalized units
@@ -33,7 +33,7 @@ TEST_CASE("Ghia 1982 Benchmark (Re=100, 2D lid-driven cavity flow)", "[ghia_re10
 
     // Simulation
     const unsigned long max_steps = 10000;
-    solver.solve(max_steps, 2.0);
+    solver.solve(max_steps, 1.0);
 
     // Validation at centerlines
     const int center_x = N / 2;
