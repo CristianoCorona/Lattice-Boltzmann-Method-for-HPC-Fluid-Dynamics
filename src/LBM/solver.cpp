@@ -100,7 +100,8 @@ void Solver<Descriptor, float_type>::update_moments(
 template <isDescriptor Descriptor, std::floating_point float_type>
 void Solver<Descriptor, float_type>::solve(
         const unsigned long n_iterations,
-        const float_type delta_t) {
+        const float_type delta_t,
+        int output_interval) {
     /*
      *  Since tau and delta_t are always used as a ratio between them
      *  and it is constant over the entire simulation, we compute it
@@ -139,7 +140,7 @@ void Solver<Descriptor, float_type>::solve(
         update_moments(f_next, rho_next, u_next);
 
         lattice.swap_buffers(f_next, rho_next, u_next);
-        if ((n_iter + 1) % 100 == 0) {
+        if ((n_iter + 1) % output_interval == 0) {
             lattice.write_vtk(n_iter + 1);
         }
     }

@@ -105,7 +105,7 @@ public:
      *  Performs the simulation over a user-defined number of iterations (n_iterations)
      *  where each step reprents a user-defined time interval of lenght delta_t.
      */
-    void solve(const unsigned long n_iterations, const float_type delta_t);
+    void solve(const unsigned long n_iterations, const float_type delta_t, int output_interval=100);
     
 };
 

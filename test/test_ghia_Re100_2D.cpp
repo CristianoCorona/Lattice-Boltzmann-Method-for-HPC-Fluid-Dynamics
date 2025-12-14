@@ -15,7 +15,7 @@ TEST_CASE("Ghia 1982 Benchmark (Re=100, 2D lid-driven cavity flow)", "[ghia_re10
     const int N = 81; //Odd grid size to have exact center -> 129 in the paper (81 might work and be faster)
     std::array<int, Descriptor:: d> dimensions = {N, N};
 
-    std::array<float_type, Descriptor::d> lid_velocity = {0.1, 0.0}; // Lid velocity = 1.0 for normalized units
+    std::array<float_type, Descriptor::d> lid_velocity = {0.1, 0.0}; 
     float_type Re = 100.0;
     float_type L = static_cast<float_type>(N - 1); // Domain length in lattice units
     float_type nu = lid_velocity[0] * L / Re; // Kinematic viscosity (from Re definition) TODO -> norm of lid_velocity
