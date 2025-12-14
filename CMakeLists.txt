@@ -13,7 +13,7 @@ add_subdirectory(src/LBM)
 
 # ---- Executable ----
 add_executable(${PROJECT_NAME}
-    src/main.cpp
+    src/main3D.cpp
 )
 
 # ---- Link LBM_lib ----

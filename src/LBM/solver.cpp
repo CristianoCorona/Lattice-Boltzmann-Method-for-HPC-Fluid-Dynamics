@@ -149,3 +149,5 @@ void Solver<Descriptor, float_type>::solve(
 
 template class Solver<D2Q9<float>, float>;
 template class Solver<D2Q9<double>, double>;
+template class Solver<D3Q19<float>, float>;
+template class Solver<D3Q19<double>, double>;
