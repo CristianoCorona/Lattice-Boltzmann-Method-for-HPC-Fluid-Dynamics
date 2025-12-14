@@ -159,7 +159,7 @@ This project was developed for the **Advanced Methods for Scientific Computing**
 
 ## Authors
 * **[Giovanni Carpenedo](https://github.com/gcarpenedo)**
-* **[Daniele Condalonieri](https://github.com/DanieleConfalonieri)**
+* **[Daniele Confalonieri](https://github.com/DanieleConfalonieri)**
 * **[Cristiano Corona](https://github.com/CristianoCorona)**
 * **[Simone Ferri](https://github.com/SimoFerri)**
 * **[Federico Pizzolato](https://github.com/federico-pizz)**

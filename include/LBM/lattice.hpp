@@ -128,9 +128,9 @@ public:
     /*
      *   Swap the distribution function buffers (f_current and f_next)
      */
-    void swap_buffers(std::array<std::vector<float_type>, q> f,
-                      std::vector<float_type> rho, 
-                      std::array<std::vector<float_type>, d> u);
+    void swap_buffers(std::array<std::vector<float_type>, q> &f,
+                      std::vector<float_type> &rho, 
+                      std::array<std::vector<float_type>, d> &u);
 
     /*
      *   This function checks if the given node (passed through linearized index for generality)
