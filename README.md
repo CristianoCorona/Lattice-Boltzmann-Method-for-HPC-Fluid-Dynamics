@@ -27,10 +27,13 @@ The solver currently supports **Lid-Driven Cavity** flow benchmarks but is struc
 ``` text
 lbm-1-lbm/
 ├── include/
-│   └── LBM/             # Header-only template library (Lattice, Solver, Boundary, Descriptor, LBM)
+│   └── LBM/                      # Header-only template library (Lattice, Solver, Boundary, Descriptor, LBM)
+├── scrpits
+|   └── job_scripts.sh            # Reference script to launch the simulation on the cluster (qsub) 
 ├── src/
-│   └── LBM/             # Header implementation 
-|   └── main.cpp         # Main simulation entry point
+│   └── LBM/                      # Header implementation 
+|   └── main.cpp                  # Main local simulation entry point (LBM target)
+|   └── cluster_main.cpp          # Cluster simulation entry point (LBM_cluster target)
 ├── test/
 │   ├── lattice_test.cpp # Unit tests for core data structures (Catch2)
 │   └── validation_ghia.cpp # Physics validation (Re=100)
@@ -133,7 +136,7 @@ make
 We use [Catch2](https://github.com/catchorg/Catch2) for unit and integration testing.
 To run the tests:
 ``` bash
-cd build
+cd build/test
 ./run_tests
 ```
 #### Benchmark: Ghia et al. (1982)
@@ -141,14 +144,34 @@ cd build
 The project includes a specific validation test that compares the computed velocity profiles (u-velocity along vertical centerline, v-velocity along horizontal centerline) against the tabulated data from the standard reference.
 
 ### Standard usage
-``` bash
-cd build
-./LBM
-```
-TODO
+To maintain a clean codebase and optimize for different environments, the project provides two distinct entry points:
+
+* **`main.cpp` (Local/Debug):** The standard entry point intended for local development, debugging, and visualization tests. Use this target for runs on personal machines or when immediate graphical feedback is required.
+    
+* **`cluster_main.cpp` (HPC/Production):** Specifically designed for high-performance execution on the cluster. 
+
+This separation ensures that cluster-specific configurations do not clutter the local development logic.
 
 ## Visualization
-TODO
+
+The simulation generates data in **VTK format** (`.vtk`), which allows for high-quality 2D/3D visualization.
+
+### Output Location
+By default, all output files are generated **in the same directory where the executable is launched**. 
+* If you run `./LBM_cluster`, the `.vtk` files will appear in the current folder.
+* **Note:** For long runs on the cluster, ensure you are running the job from a directory with sufficient storage quota.
+
+### How to Visualize (ParaView)
+We recommend using [ParaView](https://www.paraview.org/) to inspect the results.
+
+1.  **Load the Data:** Open ParaView and navigate to the build/execution directory. ParaView will automatically group the file sequence (e.g., `output_..vtk`). Select the group and click **Apply**.
+2.  **Inspect Internal Flow:** If the simulation is 3D, the domain will appear as a solid block by default. To see the internal fluid dynamics, use standard filters:
+    * **Slice:** To view 2D cross-sections of velocity or density.
+    * **Stream Tracer:** To visualize flow pathlines.
+##  Example results
+* [2D Lid-Driven Cavity velocity vector field](https://youtu.be/lDILUFNHXN0)
+* [3D Lid-Driven Cavity (Re=400)](https://youtu.be/Xj1hBF0MpeU)
+
 
 ## Acknowledgments
 This project was developed for the **Advanced Methods for Scientific Computing** course at **Politecnico di Milano** (A.Y. 2025-2026).
@@ -156,6 +179,8 @@ This project was developed for the **Advanced Methods for Scientific Computing**
 * **[Prof. Luca Formaggia](https://github.com/lformaggia)** - *Course Instructor*
 * **[Dr. Paolo Joseph Baioni](https://github.com/pjbaioni)** - *Teaching Assistant*
 * **[Dr. Marco Scarpelli](https://github.com/ScarpMarc)** - *Teaching Assistant*
+
+The simulation in used in the presentation for this project were, in part, performed on the HPC Cluster of the Department of Mathematics of Politecnico di Milano which was funded by MUR grant Dipartimento di Eccellenza 2023-2027.
 
 ## Authors
 * **[Giovanni Carpenedo](https://github.com/gcarpenedo)**
