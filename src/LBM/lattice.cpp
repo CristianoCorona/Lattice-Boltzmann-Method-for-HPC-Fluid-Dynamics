@@ -48,11 +48,11 @@ void Lattice<Descriptor, float_type>::write_vtk(int iter)
     file << "ASCII\n";
     file << "DATASET STRUCTURED_POINTS\n";
 
-    if constexpr (Descriptor::d == 2) {
+    if (Descriptor::d == 2) {
         file << "DIMENSIONS " << sizes[0] << " " << sizes[1] << " 1\n";
         file << "ORIGIN 0 0 0\n";
         file << "SPACING " << dx << " " << dx << " " << dx << "\n";
-    } else if constexpr (Descriptor::d == 3) {
+    } else {
         file << "DIMENSIONS " << sizes[0] << " " << sizes[1] << " " << sizes[2] << "\n";
         file << "ORIGIN 0 0 0\n";
         file << "SPACING " << dx << " " << dx << " " << dx << "\n";
@@ -69,14 +69,15 @@ void Lattice<Descriptor, float_type>::write_vtk(int iter)
 
     file << "VECTORS u float\n";
 
-    if constexpr (Descriptor::d == 2) {
-        for (int cell = 0; cell < total_cells; ++cell) {
-            file << u[0][cell] << " " << u[1][cell] << " 0.0\n";
+    for (int cell = 0; cell < total_cells; ++cell) {
+        for (int k = 0; k < Descriptor::d; ++k) {
+            file << u[k][cell] << " ";
         }
-    } else if constexpr (Descriptor::d == 3) {
-        for (int cell = 0; cell < total_cells; ++cell) {
-            file << u[0][cell] << " " << u[1][cell] << " " << u[2][cell] << "\n";
+        
+        if (Descriptor::d == 2) {
+            file << "0.0";
         }
+        file << "\n";
     }
 
     file.close();

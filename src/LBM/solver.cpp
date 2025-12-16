@@ -12,8 +12,6 @@ void Solver<Descriptor, float_type>::stream_collide(
     const std::array<int, Descriptor::d> c_i = Descriptor::c[i];
     const float_type w_i = Descriptor::w[i];
     const std::vector<float_type> &f_current = lattice.f[i];
-    const int i_opp = Descriptor::opposite[i];
-    const float_type two_w_invcs2 = static_cast<float_type>(2.0) * w_i * inv_cs2;
 
     /*
      *  Iterates over the entire lattice computing f_eq, f_star and f_i for the
@@ -44,7 +42,8 @@ void Solver<Descriptor, float_type>::stream_collide(
          *  otherwise compute the propagation with the push method.
          */
         if (lattice.is_at_bound(index, i, rho_w, u_w)) { // adapt it according to Lattice
-            float_type f_bounced = f_star - two_w_invcs2 * rho_w * scalar_prod(c_i, u_w);
+            int i_opp = Descriptor::opposite[i];
+            float_type f_bounced = f_star - 2.0 * w_i * rho_w * scalar_prod(c_i, u_w) * inv_cs2;
             f_next[i_opp][index] = f_bounced;
         } else {
             int next_index = lattice.get_next_index(index, i);
@@ -67,8 +66,6 @@ void Solver<Descriptor, float_type>::update_moments(
         f_ptrs[i] = f_next[i].data();
     }
 
-    const auto &c = Descriptor::c;
-
     #pragma omp parallel for schedule(static)
     for (int index = 0; index < lattice.total_cells; ++index) {
         float_type local_rho = 0.0;
@@ -77,21 +74,18 @@ void Solver<Descriptor, float_type>::update_moments(
         for (int i = 0; i < Descriptor::q; ++i) {
             float_type val = f_ptrs[i][index];
             local_rho += val;
-            #pragma omp simd
             for (int d = 0; d < Descriptor::d; ++d) {
-                local_u[d] += static_cast<float_type>(c[i][d]) * val;
+                local_u[d] += static_cast<float_type>(Descriptor::c[i][d]) * val;
             }
         }
 
         rho_next[index] = local_rho;
         if (local_rho > 1e-9) {
             float_type inv_rho = 1.0 / local_rho;
-            #pragma omp simd
             for (int d = 0; d < Descriptor::d; ++d) {
                 u_next[d][index] = local_u[d] * inv_rho;
             }
         } else {
-            #pragma omp simd
             for (int d = 0; d < Descriptor::d; ++d) {
                 u_next[d][index] = 0.0;
             }
