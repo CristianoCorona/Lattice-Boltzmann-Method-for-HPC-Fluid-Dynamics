@@ -48,11 +48,11 @@ void Lattice<Descriptor, float_type>::write_vtk(int iter)
     file << "ASCII\n";
     file << "DATASET STRUCTURED_POINTS\n";
 
-    if (Descriptor::d == 2) {
+    if constexpr (Descriptor::d == 2) {
         file << "DIMENSIONS " << sizes[0] << " " << sizes[1] << " 1\n";
         file << "ORIGIN 0 0 0\n";
         file << "SPACING " << dx << " " << dx << " " << dx << "\n";
-    } else {
+    } else if constexpr (Descriptor::d == 3) {
         file << "DIMENSIONS " << sizes[0] << " " << sizes[1] << " " << sizes[2] << "\n";
         file << "ORIGIN 0 0 0\n";
         file << "SPACING " << dx << " " << dx << " " << dx << "\n";
@@ -69,15 +69,14 @@ void Lattice<Descriptor, float_type>::write_vtk(int iter)
 
     file << "VECTORS u float\n";
 
-    for (int cell = 0; cell < total_cells; ++cell) {
-        for (int k = 0; k < Descriptor::d; ++k) {
-            file << u[k][cell] << " ";
+    if constexpr (Descriptor::d == 2) {
+        for (int cell = 0; cell < total_cells; ++cell) {
+            file << u[0][cell] << " " << u[1][cell] << " 0.0\n";
         }
-        
-        if (Descriptor::d == 2) {
-            file << "0.0";
+    } else if constexpr (Descriptor::d == 3) {
+        for (int cell = 0; cell < total_cells; ++cell) {
+            file << u[0][cell] << " " << u[1][cell] << " " << u[2][cell] << "\n";
         }
-        file << "\n";
     }
 
     file.close();
@@ -89,6 +88,3 @@ template class Lattice<D2Q9<float>, float>;
 template class Lattice<D2Q9<double>, double>;
 template class Lattice<D3Q19<float>, float>;
 template class Lattice<D3Q19<double>, double>;
-
-// function to compute the stess tensor of the lattice -- add in the Solver class
-// sigma a,b = -(1-delta_t/2tau)sum(c_ia*c_ib*f_neq_i), with f_neq_i being f_i - f_eq
