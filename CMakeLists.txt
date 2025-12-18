@@ -12,18 +12,20 @@ find_package(OpenMP REQUIRED)
 add_subdirectory(src/LBM)
 
 # ---- Executable ----
-add_executable(${PROJECT_NAME}
+add_executable(lbm3D
     src/main3D.cpp
+)
+add_executable(lbm2D
+    src/main2D.cpp
+)
+add_executable(lbm3D_cluster
+    src/cluster_main.cpp
 )
 
 # ---- Link LBM_lib ----
-target_link_libraries(${PROJECT_NAME} PRIVATE LBM_lib)
-
-# ---- Include dir ----
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+target_link_libraries(lbm3D PRIVATE LBM_lib)
+target_link_libraries(lbm2D PRIVATE LBM_lib)
+target_link_libraries(lbm3D_cluster PRIVATE LBM_lib)
 
 # ------ Tests -----
 option(BUILD_TESTS "Build unit tests" OFF)
@@ -37,9 +39,9 @@ else()
 endif()
 
 # ---- Cluster target ----
-add_executable(LBM_cluster src/cluster_main.cpp)
-target_link_libraries(LBM_cluster PRIVATE LBM_lib)
-if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-    target_compile_options(LBM_cluster PRIVATE -O3 -march=native -flto)
-endif()
+# add_executable(LBM_cluster src/cluster_main.cpp)
+# target_link_libraries(LBM_cluster PRIVATE LBM_lib)
+# if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+#    target_compile_options(LBM_cluster PRIVATE -O3 -march=native -flto)
+# endif()
 

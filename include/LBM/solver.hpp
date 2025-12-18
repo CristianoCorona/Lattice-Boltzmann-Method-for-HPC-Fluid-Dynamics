@@ -2,6 +2,7 @@
 #include <array>
 #include <vector>
 #include <iostream>
+#include <omp.h>
 
 #ifndef SOLVER_HPP
 #define SOLVER_HPP
@@ -30,6 +31,8 @@ private:
     static constexpr float_type inv_2cs2 = 1.5; // 2.0 * 1.0 / (1.0 / 3.0)
     static constexpr float_type inv_2cs4 = 4.5; // 2.0 * 1.0 / (1.0 / 3.0)^2
 
+
+    static constexpr float_type delta_t = 1.0f;
 
     /*
      *  Lambda function used to compute the scalar product between two arrays,
@@ -107,7 +110,7 @@ public:
      *  Performs the simulation over a user-defined number of iterations (n_iterations)
      *  where each step reprents a user-defined time interval of lenght delta_t.
      */
-    void solve(const unsigned long n_iterations, const float_type delta_t, int output_interval=10);
+    void solve(const unsigned long n_iterations, int output_interval=10);
     
 };
 

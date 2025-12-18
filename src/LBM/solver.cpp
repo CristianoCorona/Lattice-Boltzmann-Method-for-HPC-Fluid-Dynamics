@@ -1,5 +1,7 @@
 #include "LBM/solver.hpp"
 
+using namespace std;
+
 /*
  *  stream_collide implementation, i is the direction in which it computes the step.
  */
@@ -100,7 +102,6 @@ void Solver<Descriptor, float_type>::update_moments(
 template <isDescriptor Descriptor, std::floating_point float_type>
 void Solver<Descriptor, float_type>::solve(
         const unsigned long n_iterations,
-        const float_type delta_t,
         int output_interval) {
     /*
      *  Since tau and delta_t are always used as a ratio between them
@@ -133,6 +134,12 @@ void Solver<Descriptor, float_type>::solve(
 
     int step = 1;
 
+    double initial_time;
+    double finish_time;
+    double solve_time;
+
+    initial_time = omp_get_wtime();
+
     for (unsigned long n_iter = 0; n_iter < n_iterations; ++n_iter) {
         /*
          *  This loop iterates over each possible direction, defined by the LatticeDescriptor,
@@ -156,7 +163,11 @@ void Solver<Descriptor, float_type>::solve(
     }
     lattice.write_vtk(n_iterations);
 
+    finish_time = omp_get_wtime();
+    solve_time = finish_time - initial_time;
+
     std::cout << "Simulation Completed!" << std::endl;
+    std::cout << "Total Time Elapsed: " << solve_time << "sec" << std::endl;
 
 }
 

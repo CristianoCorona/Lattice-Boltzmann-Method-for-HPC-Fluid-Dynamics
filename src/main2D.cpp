@@ -17,9 +17,8 @@ int main(int argc, char *argv[]) {
     
     Solver<D2Q9<float>, float> solver(lattice);
 
-    unsigned long n_iter = 5000;
-    float delta_t = 1.0f;
-    solver.solve(n_iter, delta_t);
+    unsigned long n_iter = 1000;
+    solver.solve(n_iter);
 
     return 0;
 }

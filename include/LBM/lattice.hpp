@@ -6,6 +6,7 @@
 #include <array>
 #include <string>
 #include <fstream>
+#include <iostream>
 #include "descriptor.hpp"
 #include "boundary.hpp"
 
@@ -32,6 +33,7 @@ public:
     static constexpr int q = Descriptor::q;
     std::array<int, d> sizes;
     int total_cells;
+    static constexpr float_type dx = 1.0;
 
     /*
      *   Pre-computed strides for indexing
@@ -49,7 +51,6 @@ public:
             float_type nu_,
             DirEnum moving_wall_,
             std::string output_file_ = "output.vtk",
-            float_type dx = 1.0, 
             float_type rho_init_=1.0,
             float_type rho_wall_=1.0,
             float_type rho_lid_=1.0
@@ -57,7 +58,7 @@ public:
             : sizes(dimensions), 
             u_lid(lid_velocity), 
             output_file(output_file_),
-            nu(nu_), dx(dx), 
+            nu(nu_), 
             rho_init(rho_init_),
             rho_wall(rho_wall_),
             rho_lid(rho_lid_),
@@ -113,7 +114,7 @@ public:
      *   Physical parameters and output file
      */
     std::array<std::vector<float_type>, q> f;
-    float_type rho_init, rho_wall, rho_lid, nu, dx;
+    float_type rho_init, rho_wall, rho_lid, nu;
     std::array<float_type, d> u_lid;
     std::vector<float_type> rho;
     std::array<std::vector<float_type>, d> u;

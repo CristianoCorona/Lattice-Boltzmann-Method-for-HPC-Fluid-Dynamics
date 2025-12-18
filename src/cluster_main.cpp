@@ -20,9 +20,8 @@ int main(int argc, char *argv[]) {
     Solver<D2Q9<float_type>, float_type> solver(lattice);
 
     unsigned long n_iter = 200000;
-    float_type delta_t = 1.0;
     int output_interval = 5000;
-    solver.solve(n_iter, delta_t, output_interval);
+    solver.solve(n_iter, output_interval);
 
     return 0;
 }

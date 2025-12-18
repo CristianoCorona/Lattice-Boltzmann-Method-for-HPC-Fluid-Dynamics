@@ -1,6 +1,8 @@
 #include "LBM/lattice.hpp"
 #include <utility>
 
+using namespace std;
+
 // Swap f, rho and u
 template <isDescriptor Descriptor, std::floating_point float_type>
 void Lattice<Descriptor, float_type>::swap_buffers(std::array<std::vector<float_type>, q> &f,
@@ -27,6 +29,23 @@ bool Lattice<Descriptor, float_type>::is_at_bound(int index, int direction, floa
 // Initialize equilibrium with u=0 and rho=rho_init, called only in the beginning of the simulation
 template <isDescriptor Descriptor, std::floating_point float_type>
 void Lattice<Descriptor, float_type>::initialize_equilibrium() {
+
+    cout << "Lattice Descriptor: D" << d << "Q" << q << endl;
+
+    cout << "Dimension of the Lattice: " ;
+    for(int i=0; i<sizes.size(); ++i){
+        cout << sizes[i];
+        if (i < d -1) cout << "x";
+    }
+    cout << endl;
+
+    cout << "Lid velocity on x: " << u_lid[0] << endl;
+    cout << "Lid velocity on y: " << u_lid[1] << endl;
+    if(d == 3)
+        cout << "Lid velocity on z: " << u_lid[2] << endl;
+    
+    
+
     for (int cell = 0; cell < total_cells; ++cell) {
         for (int i = 0; i < q; ++i) {
             // f_eq_i = w_i * rho (when u = 0)
