@@ -32,7 +32,10 @@
 *.app
 
 # VS Code
-# /.vscode/*
+/.vscode/*
+
+# Github
+.github
 
 # Build directory
 build/
