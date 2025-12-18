@@ -19,7 +19,7 @@ void Solver<Descriptor, float_type>::stream_collide(
      *  velocity of the cells.
      */
     #pragma omp parallel for schedule(static)
-    for(int index = 0; index < lattice.total_cells; ++index) {
+    for (int index = 0; index < lattice.total_cells; ++index) {
         std::array<float_type, Descriptor::d> u;
         for (int d = 0; d < Descriptor::d; ++d) {
             u[d] = lattice.u[d][index];
@@ -128,6 +128,11 @@ void Solver<Descriptor, float_type>::solve(
     lattice.initialize_equilibrium();
 
     lattice.write_vtk(0);
+
+    std::cout << "Initial Equilibrium saved \nSimulation started..." << std::endl;
+
+    int step = 1;
+
     for (unsigned long n_iter = 0; n_iter < n_iterations; ++n_iter) {
         /*
          *  This loop iterates over each possible direction, defined by the LatticeDescriptor,
@@ -143,9 +148,19 @@ void Solver<Descriptor, float_type>::solve(
         if ((n_iter + 1) % output_interval == 0) {
             lattice.write_vtk(n_iter + 1);
         }
+
+        if (n_iter == (n_iterations / 20) * step) {
+            std::cout << n_iter << "/" << n_iterations << " iteration" << std::endl;
+            step++;
+        }
     }
     lattice.write_vtk(n_iterations);
+
+    std::cout << "Simulation Completed!" << std::endl;
+
 }
+
+
 
 template class Solver<D2Q9<float>, float>;
 template class Solver<D2Q9<double>, double>;

@@ -1,6 +1,7 @@
 #include "lattice.hpp"
 #include <array>
 #include <vector>
+#include <iostream>
 
 #ifndef SOLVER_HPP
 #define SOLVER_HPP
@@ -19,7 +20,7 @@ private:
      *  Represents the lattice where the problem is defined.
      */
     Lattice<Descriptor, float_type> &lattice;
-    
+        
     /*  Since cs^2 is constant and it's a problem property it's more efficient to store
      *  it as a constexpr inside the Solver to make the compiler able to insert its value
      *  at compile time inside the code, preventing the read of the same value from
@@ -28,6 +29,7 @@ private:
     static constexpr float_type inv_cs2 = 3.0; // 1.0 / (1.0 / 3.0)
     static constexpr float_type inv_2cs2 = 1.5; // 2.0 * 1.0 / (1.0 / 3.0)
     static constexpr float_type inv_2cs4 = 4.5; // 2.0 * 1.0 / (1.0 / 3.0)^2
+
 
     /*
      *  Lambda function used to compute the scalar product between two arrays,
