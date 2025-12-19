@@ -12,7 +12,7 @@ The solver currently supports **Lid-Driven Cavity** flow benchmarks but is struc
 
 * **Lattice Models:** Support for **D2Q9** (2D) and **D3Q19** (3D) lattice discrete velocity models.
 * **HPC Optimizations:**
-    * **Structure of Arrays (SoA)** memory layout for efficient vectorization (SIMD) and cache usage.
+    * **Structure of Arrays (SoA)** memory layout for efficient vectorization and cache usage.
     * **OpenMP** parallelization for multi-core execution.
     * **Template classes** for maximum generality
 * **Numerical Methods:**
@@ -28,16 +28,17 @@ The solver currently supports **Lid-Driven Cavity** flow benchmarks but is struc
 lbm-1-lbm/
 ├── include/
 │   └── LBM/                      # Header-only template library (Lattice, Solver, Boundary, Descriptor, LBM)
-├── scrpits
+├── scripts
 |   └── job_scripts.sh            # Reference script to launch the simulation on the cluster (qsub) 
 ├── src/
 │   └── LBM/                      # Header implementation 
-|   └── main.cpp                  # Main local simulation entry point (LBM target)
-|   └── cluster_main.cpp          # Cluster simulation entry point (LBM_cluster target)
+|   └── main2D.cpp                # Main local simulation entry point (LBM target) in 2D
+|   └── main3D.cpp                # Main local simulation entry point (LBM target) in 3D
+|   └── cluster_main.cpp          # Cluster simulation entry point (LBM_cluster target) in 3D
 ├── test/
-│   ├── lattice_test.cpp # Unit tests for core data structures (Catch2)
-│   └── validation_ghia.cpp # Physics validation (Re=100)
-├── CMakeLists.txt       # CMake build configuration
+│   ├── lattice_test_D2Q9.cpp     # Unit tests for core data structures (Catch2)
+│   └── test_ghia_Re100_2D.cpp    # Physics validation (Re=100)
+├── CMakeLists.txt                # CMake build configuration
 └── README.md
 ```
 
@@ -84,9 +85,9 @@ classDiagram
     }
 
     class Solver~Descriptor, float_type~ {
-        -Lattice& lattice
+        +Lattice& lattice
         +solve()
-        -stream_collide()
+        +stream_collide()
     }
 
     isDescriptor <|-- D2Q9 : implements

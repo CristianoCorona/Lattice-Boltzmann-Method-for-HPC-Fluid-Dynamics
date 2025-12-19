@@ -1,33 +1,48 @@
 cmake_minimum_required(VERSION 3.28)
 project(LBM LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+# ---------------- Build type ----------------
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+endif()
+
+# ---------------- C++ standard ----------------
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# ----- Packages -----
+# ---------------- Optimization (Release only) ----------------
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(STATUS "Configuring Release optimizations")
+
+    # Explicit optimization flags
+    add_compile_options(
+        -O3
+        -march=native
+        -ffast-math
+    )
+
+    # Enable LTO (compile + link)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+endif()
+
+# ---------------- OpenMP ----------------
 find_package(OpenMP REQUIRED)
 
-# ---- Source subdirectory ----
+# ---------------- Source subdirectory ----------------
 add_subdirectory(src/LBM)
 
-# ---- Executable ----
-add_executable(lbm3D
-    src/main3D.cpp
-)
-add_executable(lbm2D
-    src/main2D.cpp
-)
-add_executable(lbm3D_cluster
-    src/cluster_main.cpp
-)
+# ---------------- Executables ----------------
+add_executable(lbm3D src/main3D.cpp)
+add_executable(lbm2D src/main2D.cpp)
+add_executable(lbm3D_cluster src/cluster_main.cpp)
 
-# ---- Link LBM_lib ----
-target_link_libraries(lbm3D PRIVATE LBM_lib)
-target_link_libraries(lbm2D PRIVATE LBM_lib)
-target_link_libraries(lbm3D_cluster PRIVATE LBM_lib)
+# ---------------- Link libraries ----------------
+target_link_libraries(lbm3D PRIVATE LBM_lib OpenMP::OpenMP_CXX)
+target_link_libraries(lbm2D PRIVATE LBM_lib OpenMP::OpenMP_CXX)
+target_link_libraries(lbm3D_cluster PRIVATE LBM_lib OpenMP::OpenMP_CXX)
 
-# ------ Tests -----
+# ---------------- Tests ----------------
 option(BUILD_TESTS "Build unit tests" OFF)
 
 if(BUILD_TESTS)
@@ -35,13 +50,5 @@ if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)
 else()
-    message(STATUS "Building withput unit tests, to enable them use -DBUILD_TESTS=ON")
+    message(STATUS "Building without unit tests (enable with -DBUILD_TESTS=ON)")
 endif()
-
-# ---- Cluster target ----
-# add_executable(LBM_cluster src/cluster_main.cpp)
-# target_link_libraries(LBM_cluster PRIVATE LBM_lib)
-# if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-#    target_compile_options(LBM_cluster PRIVATE -O3 -march=native -flto)
-# endif()
-

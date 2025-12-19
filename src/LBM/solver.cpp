@@ -20,7 +20,7 @@ void Solver<Descriptor, float_type>::stream_collide(
      *  given direction i and summing the contribution to the next density and
      *  velocity of the cells.
      */
-    #pragma omp parallel for simd schedule(static)
+    #pragma omp parallel for simd schedule(dynamic)
     for (int index = 0; index < lattice.total_cells; ++index) {
         std::array<float_type, Descriptor::d> u;
         for (int d = 0; d < Descriptor::d; ++d) {
@@ -68,7 +68,7 @@ void Solver<Descriptor, float_type>::update_moments(
         f_ptrs[i] = f_next[i].data();
     }
 
-    #pragma omp parallel for schedule(static)
+    #pragma omp parallel for schedule(dynamic)
     for (int index = 0; index < lattice.total_cells; ++index) {
         float_type local_rho = 0.0;
         std::array<float_type, Descriptor::d> local_u{};
