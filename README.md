@@ -1,6 +1,9 @@
-# LBM-1-LBM: High-Performance Lattice Boltzmann Solver 
+# Lattice Boltzmann (LBM) Solver for HPC Fluid Dynamics
+![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
+![OpenMP](https://img.shields.io/badge/Parallel-OpenMP-orange.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-A parallel C++ implementation of the Lattice Boltzmann Method (LBM) for computational fluid dynamics (CFD).
+A parallel C++20 implementation of the Lattice Boltzmann Method optimized for High Performance Computing environments.
 
 ## Overview
 
@@ -155,7 +158,7 @@ This separation ensures that cluster-specific configurations do not clutter the 
 
 ## Visualization
 
-The simulation generates data in **VTK format** (`.vtk`), which allows for high-quality 2D/3D visualization.
+The  generates data in **VTK format** (`.vtk`), which allows for high-quality 2D/3D visualization.
 
 ### Output Location
 By default, all output files are generated **in the same directory where the executable is launched**. 
@@ -166,7 +169,7 @@ By default, all output files are generated **in the same directory where the exe
 We recommend using [ParaView](https://www.paraview.org/) to inspect the results.
 
 1.  **Load the Data:** Open ParaView and navigate to the build/execution directory. ParaView will automatically group the file sequence (e.g., `output_..vtk`). Select the group and click **Apply**.
-2.  **Inspect Internal Flow:** If the simulation is 3D, the domain will appear as a solid block by default. To see the internal fluid dynamics, use standard filters:
+2.  **Inspect Internal Flow:** If the  is 3D, the domain will appear as a solid block by default. To see the internal fluid dynamics, use standard filters:
     * **Slice:** To view 2D cross-sections of velocity or density.
     * **Stream Tracer:** To visualize flow pathlines.
 ##  Example results
@@ -181,7 +184,7 @@ This project was developed for the **Advanced Methods for Scientific Computing**
 * **[Dr. Paolo Joseph Baioni](https://github.com/pjbaioni)** - *Teaching Assistant*
 * **[Dr. Marco Scarpelli](https://github.com/ScarpMarc)** - *Teaching Assistant*
 
-The simulation in used in the presentation for this project were, in part, performed on the HPC Cluster of the Department of Mathematics of Politecnico di Milano which was funded by MUR grant Dipartimento di Eccellenza 2023-2027.
+The simulation used in the presentation for this project were, in part, performed on the HPC Cluster of the Department of Mathematics of Politecnico di Milano which was funded by MUR grant Dipartimento di Eccellenza 2023-2027.
 
 ## Authors
 * **[Giovanni Carpenedo](https://github.com/gcarpenedo)**
